@@ -1,0 +1,6 @@
+digraph {
+  Inc1 [meta='math/inc']
+  Inc2 [meta='math/inc']
+  
+  Inc1 -> Inc2
+}

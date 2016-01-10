@@ -1,0 +1,13 @@
+digraph {
+  subgraph Recursive {
+    type=composite;
+    inPort=in;
+    outPort=out;
+    meta="Recursive";
+    
+    Rec [meta="Recursive"];
+  }
+  
+  Recursive -> Rec [inPort=in,outPort=in];
+  Rec -> Recursive [inPort=out,outPort=out];
+}
