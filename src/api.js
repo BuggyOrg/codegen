@@ -9,5 +9,7 @@ export function listProcesses (graph) {
   return _(graph.nodes()).chain()
     .reject(isPortNode)
     .map(n => graph.node(n))
+    .map(n => n.meta)
+    .unique()
     .value()
 }
