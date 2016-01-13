@@ -1,0 +1,10 @@
+digraph {
+  Example {
+    A [nodeType=port]
+    B [nodeType=port]
+    C [nodeType=port]
+    A -> Example [outputPort=B]
+    Example -> C [inputPort=C]
+    B -> C
+  }
+}
