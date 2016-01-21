@@ -51,33 +51,3 @@ program
 
 program
   .parse(process.argv)
-/*
-if (!program.typegraph) {
-  console.error('No type conversion graph given')
-}
-
-try {
-  var typeGraph = graphlib.json.read(JSON.parse(fs.readFileSync(program.typegraph)))
-
-  var processGraph = str => {
-    var graph = graphlib.json.read(JSON.parse(str))
-    var typed = addTypeConversion(graph, typeGraph)
-    return JSON.stringify(graphlib.json.write(typed))
-  }
-
-  if (program.graphfile) {
-    var str = fs.readFileSync(program.graphfile)
-    console.log(processGraph(str))
-  } else {
-    getStdin().then(str => {
-      try {
-        console.log(processGraph(str))
-      } catch (e) {
-        console.error(e)
-      }
-    })
-  }
-} catch (e) {
-  console.error(e)
-}
-*/
