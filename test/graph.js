@@ -44,6 +44,16 @@ describe('Graph processing', () => {
     expect(processes).to.have.length(1)
   })
   it('uses the resolve generator function on composite nodes', () => {
-    return true
+    const lib = {
+      a: {meta: 'a', nodes: ['b']},
+      b: {meta: 'b', nodes: ['c'], atomic: false},
+      c: {meta: 'c', nodes: ['a']}
+    }
+    var resolve = function * (name) {
+      yield lib[name]
+    }
+    var graph = readFixture('composites.dot')
+    var processes = genToArray(api.processNames(graph, resolve))
+    expect(processes).to.have.length(3)
   })
 })
