@@ -17,6 +17,16 @@ var readFixture = (file) => {
   }
 }
 
+var genToArray = (gen) => {
+  var arr = []
+  var next = gen.next()
+  while (!next.done) {
+    arr.push(next.value)
+    next = gen.next()
+  }
+  return arr
+}
+
 describe('Graph processing', () => {
   it('lists all process nodes in a graph', () => {
     var graph = readFixture('testgraph.graphlib')
@@ -25,12 +35,15 @@ describe('Graph processing', () => {
   })
   it('counts every process type only once', () => {
     var graph = readFixture('twice.dot')
-    var processes = api.processNames(graph)
+    var processes = genToArray(api.processNames(graph))
     expect(processes).to.have.length(1)
   })
   it('counts recursively defined process types only once ', () => {
     var graph = readFixture('recurse.dot')
-    var processes = api.processNames(graph)
+    var processes = genToArray(api.processNames(graph))
     expect(processes).to.have.length(1)
+  })
+  it('uses the resolve generator function on composite nodes', () => {
+    return true
   })
 })
