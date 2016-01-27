@@ -33,14 +33,29 @@ describe('Graph processing', () => {
     var processes = api.processes(graph)
     expect(processes).to.have.length(5)
   })
-  it('counts every process type only once', () => {
+  it('returns an error if a process cannot be found', () => {
+    var resolve = function * (name) {
+      throw new Error('could not find ' + name + ' in known processes list')
+    }
     var graph = readFixture('twice.dot')
-    var processes = genToArray(api.processNames(graph))
+    var gen = api.processNames(graph, resolve)
+    var fn = gen.next
+    expect(fn).to.throw(Error)
+  })
+  it('counts every process type only once', () => {
+    var graph = readFixture('plus2.dot')
+    var resolve = function * (name) {
+      yield graph.node(name)
+    }
+    var processes = genToArray(api.processNames(graph, resolve))
     expect(processes).to.have.length(1)
   })
   it('counts recursively defined process types only once ', () => {
     var graph = readFixture('recurse.dot')
-    var processes = genToArray(api.processNames(graph))
+    var resolve = function * (name) {
+      yield graph.node(name)
+    }
+    var processes = genToArray(api.processNames(graph, resolve))
     expect(processes).to.have.length(1)
   })
   it('uses the resolve generator function on composite nodes', () => {

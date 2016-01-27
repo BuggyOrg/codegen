@@ -37,6 +37,9 @@ export function * processNames (graph, resolve) {
       continue
     }
     var fullNode = resolve(cur).next().value
+    if (!fullNode) {
+      throw new Error('cannot resolve ' + cur)
+    }
     processedNodes[cur] = fullNode
     yield cur
     if (fullNode.nodes) {

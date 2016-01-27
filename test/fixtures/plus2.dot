@@ -1,4 +1,4 @@
-digraph {
+digraph plus2 {
   Inc1 [meta="math/inc",nodeType="process"]
   Inc2 [meta="math/inc",nodeType="process"]
   
