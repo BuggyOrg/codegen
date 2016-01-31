@@ -37,7 +37,7 @@ describe('Graph processing', () => {
     var resolve = function * (name) {
       throw new Error('could not find ' + name + ' in known processes list')
     }
-    var graph = readFixture('twice.dot')
+    var graph = readFixture('plus2.dot')
     var gen = api.processNames(graph, resolve)
     var fn = gen.next
     expect(fn).to.throw(Error)
@@ -45,7 +45,11 @@ describe('Graph processing', () => {
   it('counts every process type only once', () => {
     var graph = readFixture('plus2.dot')
     var resolve = function * (name) {
-      yield graph.node(name)
+      if (name === 'math/inc') {
+        yield {meta: 'math/inc', atomic: true}
+      } else {
+        yield graph.node(name)
+      }
     }
     var processes = genToArray(api.processNames(graph, resolve))
     expect(processes).to.have.length(1)
