@@ -1,8 +1,6 @@
 
 import _ from 'lodash'
 
-require('babel-polyfill')
-
 export function isPortNode (node) {
   return node.nodeType === 'inPort' || node.nodeType === 'outPort'
 }
@@ -22,30 +20,13 @@ export function processes (graph, resolve) {
     .value()
 }
 
-export function * processNames (graph, resolve) {
-  var nodes = _(graph.nodes()).chain()
-      .map(n => graph.node(n))
-      .filter(isProcess)
-      .map(n => n.meta)
-      .value()
-
-  var processedNodes = {}
-  var cur = nodes.pop()
-  while (cur) {
-    if (_.has(processedNodes, cur)) {
-      cur = nodes.pop()
-      continue
-    }
-    var fullNode = resolve(cur).next().value
-    if (!fullNode) {
-      throw new Error('cannot resolve ' + cur)
-    }
-    processedNodes[cur] = fullNode
-    yield cur
-    if (fullNode.nodes) {
-      var newNodes = _.reject(fullNode.nodes, (n) => _.has(processedNodes, n.meta))
-      nodes = _.union(nodes, newNodes)
-    }
-    cur = nodes.pop()
-  }
+/**
+ * Creates the source code for the given graph in the specified language.
+ * @params {PortGraph} graph The graph that contains the program.
+ * @params {string} language An identifier for the target language.
+ * @params {object} options An optional flag with specific translation properties.
+ * @return {Promise<string>} The source code of the program.
+ */
+export function generateCode (graph, language, options) {
+  return Promise.resolve('<no code yet>')
 }
