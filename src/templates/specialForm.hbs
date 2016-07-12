@@ -1,0 +1,12 @@
+func P_{{name}} ({{argumentList}}) {
+  for {
+    // implementation
+    {{compiledCode}}
+  }
+  {{#if needsWaitGroup}}
+  wg.Done()
+  {{/if}}
+  {{#each output}}
+  {{close name}}
+  {{/each}}
+}

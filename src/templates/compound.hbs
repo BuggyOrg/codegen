@@ -1,0 +1,15 @@
+func P_{{name}}({{arguments}}) {
+  {{#each channel}}
+  {{make name type}}
+  {{/each}}
+  {{#each continuation}}
+  {{make (concat "continuation_" target) "bool"}}
+  {{/each}}
+
+  {{#each process}}
+  {{#if recursiveRoot}}
+  {{async-send (concat "continuation_" name) "true"}}
+  {{/if}}
+  {{run name arguments}}
+  {{/each}}
+}

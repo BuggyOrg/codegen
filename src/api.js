@@ -25,8 +25,8 @@ export function processes (graph, resolve) {
  * @params {PortGraph} graph The graph that contains the program.
  * @params {string} language An identifier for the target language.
  * @params {object} options An optional flag with specific translation properties.
- * @return {Promise<string>} The source code of the program.
+ * @return {string} The source code of the program.
  */
 export function generateCode (graph, language, options) {
-  return Promise.resolve('<no code yet>')
+  return '<no code yet>'
 }
