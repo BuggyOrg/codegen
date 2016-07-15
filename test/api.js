@@ -8,7 +8,7 @@ const expect = chai.expect
 
 describe('API methods', () => {
   describe('Source code generation', () => {
-    it('Creates a promise', () => {
+    it('returns a string', () => {
       return expect(api.generateCode(graphAPI.empty(), 'dummy', {})).to.be.a.string
     })
   })

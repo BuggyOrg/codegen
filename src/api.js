@@ -1,23 +1,8 @@
 
-import _ from 'lodash'
+import {Graph} from '@buggyorg/graphtools'
 
-export function isPortNode (node) {
-  return node.nodeType === 'inPort' || node.nodeType === 'outPort'
-}
-
-export function isProcess (node) {
-  return node.nodeType === 'process'
-}
-
-export function isComposite (node) {
-  return node.atomic === false
-}
-
-export function processes (graph, resolve) {
-  return _(graph.nodes()).chain()
-    .map(n => graph.node(n))
-    .filter(isProcess)
-    .value()
+export function processes (graph) {
+  return Graph.nodes(graph)
 }
 
 /**
