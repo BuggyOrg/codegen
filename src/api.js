@@ -4,6 +4,7 @@ import {sanitize} from './utils'
 import template from 'lodash/template'
 import negate from 'lodash/fp/negate'
 import merge from 'lodash/fp/merge'
+import flatten from 'lodash/fp/flatten'
 import clone from 'lodash/fp/clone'
 import mapValues from 'lodash/fp/mapValues'
 import {process} from './templates/process'
@@ -30,7 +31,8 @@ export function generateCode (graph, language, options) {
   return addCode(graph, language, options)
   .then((graph) =>
     atomics(graph).map(generateProcessCode(graph)).join('\n') +
-    compounds(graph).map(generateCompoundCode(graph)).join('\n'))
+    compounds(graph).map(generateCompoundCode(graph)).join('\n') +
+    'main({data: {print: console.log.bind(console)}, type: "IO"})')
 }
 
 const generateProcessCode = (graph) => (node) => {
@@ -47,9 +49,11 @@ const generateCompoundCode = (graph) => (node) => {
     env.forEach((t) => env2[t.key] = (obj) => t.value)
     templates.forEach((t) => env2[t.key] = (env) => template(t.value, env))
   }) */
+  const templImports = merge({Node, sanitize, portArgument: (p) => p.port, Graph, flatten},
+    mapValues((v) => (data) => template(v, {imports: templImports})({data, graph}), imports))
   return template(compound,
     {
-      imports: merge({Node, sanitize, portArgument: (p) => p.port, Graph}, mapValues((v) => template(v, {imports}), imports))
+      imports: templImports
     })({node, graph})
 }
 
@@ -60,8 +64,8 @@ export function addCode (graph) {
 export function codeFor (node) {
   switch (node.componentId) {
     case 'print':
-      return 'return IO_in.print(text);'
+      return 'return v_IO_in.print(v_text);'
     case 'std/const':
-      return template('return "${ value }"')(node.metaInformation)
+      return template('v_const = "${ value }"')(node.metaInformation)
   }
 }

@@ -1,20 +1,33 @@
 export const compound = `
-function <%= *sanitize*(?node.componentId?) %> (<%= *Node.inputPorts*(?node?).map(*portArgument*).join(', ') %>) {
-  <%= Graph.inIncidents(?node?, graph).map(defineEdge).join('\n') %>
-  <%= Graph.outIncidents(node, graph).map(defineEdge).join('\n') %>
+function <%= sanitize(node.componentId) %> (<%= Node.inputPorts(node).map(portArgument).join(', ') %>` +
+  `<%= (Node.outputPorts(node).length > 0 && Node.inputPorts(node).length > 0) ? ', ' : '' %>` +
+  `<%= Node.outputPorts(node).map(portArgument).map((a) => 'output_' + a).join(', ') %>) {
+  // define edges
+  <%= Graph.edges(graph).map(defineEdge).join('\\n') %>
+
+  // store input ports
+  <%= Node.inputPorts(node).map(inputs).join('\\n') %>
+
+  <%= Graph.Algorithm.topologicalSort(graph).map(defineProcess).join('\\n') %>
 }
 `
 
-// template: String[template] -> *Env* -> (obj? -> String[code])
-
 export const imports = {
-  defineEdge: `
-  const edgeName(edge) = <%= typeName(edge.type) %>
-`,
+  defineEdge: `var <%= edgeName(data) %> = {}`,
 
-  edgeName: `
-  <%= sanitize(edge.from.node) %>_<% sanitize(edge.from.port) %>__<%= sanitize(edge.to.node) %>_<% sanitize(edge.to.port) %>
-`,
+  edgeName: `edge_<%= sanitize(data.from.node) %>_<% sanitize(data.from.port) %>__<%= sanitize(data.to.node) %>_<% sanitize(data.to.port) %>`,
 
-  typeName: `<%= obj %>`
+  typeName: `<%= data %>`,
+
+  inputs: `<%= Graph.outIncidents(data, graph).map(edgeName).map((i) => i + ' = ' + data.port) %>`,
+
+  portVariable: `p_<%= data.port %>_<%= sanitize(data.node) %>`,
+
+  defineProcess: `{
+    <%= Node.outputPorts(data).map((p) => 'var ' + portVariable(p) + ' = {}').join('\\n') %>
+    <%= sanitize(data.componentId) %>(<%= Node.inputPorts(data).map((p) => edgeName(Graph.inIncident(p, graph))).join(", ") %>` +
+     `<%= (Node.outputPorts(data).length > 0 && Node.inputPorts(data).length > 0) ? ', ' : '' %>` +
+     `<%= Node.outputPorts(data).map((p) => portVariable(p)).join(", ") %>)
+    <%= Graph.outIncidents(data, graph).map((edge) => edgeName(edge) + ' = ' + portVariable(edge.from)).join('\\n') %>
+  }`
 }

@@ -3,6 +3,7 @@
 import * as cliExt from 'cli-ext'
 import {generateCode} from './api'
 
+debugger
 cliExt.input(process.argv[2])
 .then((graphStr) => {
   var graph
