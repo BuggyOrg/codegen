@@ -9,6 +9,7 @@ import clone from 'lodash/fp/clone'
 import mapValues from 'lodash/fp/mapValues'
 import {process} from './templates/process'
 import {compound, imports} from './templates/compound'
+import * as Language from './language'
 
 const Node = Graph.Node
 
@@ -43,12 +44,6 @@ const generateProcessCode = (graph) => (node) => {
 }
 
 const generateCompoundCode = (graph) => (node) => {
-/*  const dummy = (a, b) => (obj) => template(a, b)(obj)
-  ((env, templates) => {
-    var env2 = {}
-    env.forEach((t) => env2[t.key] = (obj) => t.value)
-    templates.forEach((t) => env2[t.key] = (env) => template(t.value, env))
-  }) */
   const templImports = merge({Node, sanitize, portArgument: (p) => p.port, Graph, flatten},
     mapValues((v) => (data) => template(v, {imports: templImports})({data, graph}), imports))
   return template(compound,
@@ -57,15 +52,14 @@ const generateCompoundCode = (graph) => (node) => {
     })({node, graph})
 }
 
-export function addCode (graph) {
-  return Promise.resolve(atomics(graph).reduce((gr, n) => Graph.replaceNode(n, Node.set({code: codeFor(n)}, n), gr), graph))
+export function addCode (graph, language) {
+  return Promise.resolve(atomics(graph)
+    .reduce((gr, n) =>
+      Graph.replaceNode(n, Node.set({code: codeFor(n, language)}, n), gr),
+      graph))
 }
 
-export function codeFor (node) {
-  switch (node.componentId) {
-    case 'print':
-      return 'return v_IO_in.print(v_text);'
-    case 'std/const':
-      return template('v_const = "${ value }"')(node.metaInformation)
-  }
+export function codeFor (node, language) {
+  if (!node.atomic) return
+  return Language.implementation(node, language)
 }

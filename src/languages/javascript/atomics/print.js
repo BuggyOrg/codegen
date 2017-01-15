@@ -1,0 +1,1 @@
+<%= variable('IO_in') %>.print(<%= variable('text') %>)

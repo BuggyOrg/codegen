@@ -14,7 +14,9 @@
   "dependencies": {
     "@buggyorg/graphtools": "^0.4.0-pre.15",
     "cli-ext": "^1.1.0",
-    "promise-all": "^1.0.0"
+    "glob": "^7.1.1",
+    "promise-all": "^1.0.0",
+    "yargs": "^6.6.0"
   },
   "devDependencies": {
     "babel-cli": "^6.10.1",
