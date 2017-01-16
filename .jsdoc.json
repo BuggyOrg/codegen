@@ -1,0 +1,11 @@
+{
+  "plugins": ["plugins/markdown"],
+  "source": {
+    "include": ["src/api.js", "src/language.js"]
+  },
+  "opts": {
+    "encoding": "utf8",
+    "destination": "./jsdoc/",
+    "recurse": true
+  }
+}

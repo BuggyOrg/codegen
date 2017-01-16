@@ -1,4 +1,11 @@
-
+/**
+ * The language definition is a data store that contains information about the implementation of every atomic and
+ * the necessary templates to create certain artifacts. Possible artifacts are
+ *
+ * - `main`: An executable that can be run and that has a goal specified by the main component of the graph.
+ * - `library`: A library that exposes functions to other languages? (Not implemented)
+ * @module Language
+ */
 import merge from 'lodash/fp/merge'
 import keyBy from 'lodash/fp/keyBy'
 import mapValues from 'lodash/fp/mapValues'
