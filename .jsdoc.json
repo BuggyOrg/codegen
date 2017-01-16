@@ -1,7 +1,7 @@
 {
   "plugins": ["plugins/markdown"],
   "source": {
-    "include": ["src/api.js", "src/language.js"]
+    "include": ["src/api.js", "src/language.js", "package.json"]
   },
   "opts": {
     "encoding": "utf8",

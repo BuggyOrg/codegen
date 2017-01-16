@@ -5,7 +5,7 @@
   "main": "api.js",
   "scripts": {
     "test": "standard src/**/*.js && mocha --compilers js:babel-register",
-    "doc": "jsdoc -c .jsdoc.json && cp -r doc jsdoc/@buggyorg/codegen/`node -e \"console.log(require('./package.json').version)\"`",
+    "doc": "jsdoc -c .jsdoc.json",
     "publish-docs": "npm run doc && (git diff --exit-code > /dev/null || (echo 'No clean head. Please commit or stash before pushing docs.' && exit 1))  && (git diff --cached --exit-code  > /dev/null  || (echo 'No clean head. Please commit or stash before pushing docs.' && exit 1)) && git add -f jsdoc/* && git commit -m '(doc) New documentation.' && git subtree split --prefix jsdoc/@buggyorg/codegen/`node -e \"console.log(require('./package.json').version)\"` -b gh-pages && git push -f origin gh-pages:gh-pages && git branch -D gh-pages && git reset HEAD~1",
     "build": "babel src -d lib",
     "prepublish": "babel src -d lib"
