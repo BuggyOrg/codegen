@@ -1,13 +1,13 @@
 module.exports = {
   compound: `
-function <%= sanitize(node.componentId) %> (<%= Node.inputPorts(node).map(portArgument).join(', ') %>` +
-  `<%= (Node.outputPorts(node).length > 0 && Node.inputPorts(node).length > 0) ? ', ' : '' %>` +
-  `<%= Node.outputPorts(node).map(portArgument).map((a) => 'output_' + a).join(', ') %>) {
+function <%= sanitize(data.componentId) %> (<%= Node.inputPorts(data).map(portArgument).join(', ') %>` +
+  `<%= (Node.outputPorts(data).length > 0 && Node.inputPorts(data).length > 0) ? ', ' : '' %>` +
+  `<%= Node.outputPorts(data).map(portArgument).map((a) => 'output_' + a).join(', ') %>) {
   // define edges
   <%= Graph.edges(graph).map(defineEdge).join('\\n') %>
 
   // store input ports
-  <%= Node.inputPorts(node).map(compoundInputs).join('\\n') %>
+  <%= Node.inputPorts(data).map(compoundInputs).join('\\n') %>
 
   <%= Graph.Algorithm.topologicalSort(graph).map(callProcess).join('\\n') %>
 }`,

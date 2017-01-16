@@ -4,7 +4,9 @@
   "description": "Source code generation out of buggy graphs.",
   "main": "api.js",
   "scripts": {
-    "test": "standard src/**/*.js && mocha --compilers js:babel-register"
+    "test": "standard src/**/*.js && mocha --compilers js:babel-register",
+    "build": "babel src -d lib",
+    "prepublish": "babel src -d lib"
   },
   "keywords": [
     "Code-Generation"

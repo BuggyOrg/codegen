@@ -1,9 +1,11 @@
 
 import merge from 'lodash/fp/merge'
 import keyBy from 'lodash/fp/keyBy'
+import mapValues from 'lodash/fp/mapValues'
 import glob from 'glob'
 import {join, extname} from 'path'
 import fs from 'fs'
+import lTemplate from 'lodash/template'
 
 function renameProperty (isKey, willBeKey) {
   return (obj) => {
@@ -25,14 +27,16 @@ function gatherNamedFiles (path, readContent) {
 
 function gatherAtomics (path) {
   const atomicsPath = join(path, 'atomics')
-  return keyBy('component', gatherNamedFiles(atomicsPath, true).map(renameProperty('name', 'component')))
+  return mapValues((v) => v.contents,
+    keyBy('component', gatherNamedFiles(atomicsPath, true).map(renameProperty('name', 'component'))))
 }
 
 function gatherTemplates (path) {
   const templatesPath = join(path, 'templates')
-  return merge.apply(null, gatherNamedFiles(templatesPath)
+  return gatherNamedFiles(templatesPath)
     .map(renameProperty('name', 'template'))
-    .map((temp) => require(join(__dirname, '../', temp.path))))
+    .map((temp) => require(join(__dirname, '../', temp.path)))
+    .reduce((obj, cur) => merge(obj, cur), {})
 }
 
 export function packLanguage (path) {
@@ -53,7 +57,15 @@ export function hasImplementation (component, language) {
 
 export function implementation (node, language) {
   if (!hasImplementation(node.componentId, language)) {
-    throw new Error('Cannot get implementation for ' + node.componentId + ' in  language ' + Language.name(language))
+    throw new Error('Cannot get implementation for ' + node.componentId + ' in  language ' + name(language))
   }
-  return template(language.atomics[node.componentId], {variable: (name) => 'v_' + name})(node) 
+  try {
+    return lTemplate(language.atomics[node.componentId], {imports: {variable: (name) => 'v_' + name}})(node)
+  } catch (exc) {
+    throw new Error('Error while compiling the code for the atomic: "' + node.componentId + '" (' + exc.message + ')')
+  }
+}
+
+export function template (name, language) {
+  return language.templates[name]
 }

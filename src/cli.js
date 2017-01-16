@@ -44,7 +44,7 @@ if (!global.wasCommand) {
     } catch (err) {
       console.error('[codegen] Cannot parse input JSON.')
     }
-    return generateCode(graph, 'c')
+    return generateCode(graph, packLanguage(normalize('languages/javascript')))
   })
   .then((res) => console.log(res))
   .catch((err) => console.error(err.stack || err))
