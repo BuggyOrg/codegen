@@ -16,6 +16,8 @@ const command = (fn) => {
 }
 
 var argv = yargs
+  .alias('l', 'language')
+  .describe('l', 'Specify a language that should be used to create the code.')
   .command('pack-language', 'Pack language information into a JSON document and print it.', { demand: 1 },
     command((yargs) => console.log(packLanguage(normalize(yargs._[1])))))
   .argv
@@ -29,7 +31,11 @@ if (!global.wasCommand) {
     } catch (err) {
       console.error('[codegen] Cannot parse input JSON.')
     }
-    return generateExecutable(graph, packLanguage(normalize('languages/javascript')))
+    if (argv.l) {
+      return generateExecutable(graph, packLanguage(normalize(argv.l)))
+    } else {
+      return generateExecutable(graph, packLanguage(normalize('languages/javascript')))
+    }
   })
   .then((res) => console.log(res))
   .catch((err) => console.error(err.stack || err))
