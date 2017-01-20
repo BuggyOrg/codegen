@@ -1,2 +1,2 @@
 <%= variable('const') %> = (char*) malloc(sizeof(char) * ${ metaInformation.value.length + 1 });
-<%= variable('const') %> = "${ metaInformation.value }\0";
+memcpy(<%= variable('const') %>, "${ metaInformation.value }\0", sizeof(char) * ${ metaInformation.value.length + 1 });

@@ -1,6 +1,7 @@
 module.exports = {
   main: `
 #include <memory>
+#include <string.h>
 
 struct IO {
 };
