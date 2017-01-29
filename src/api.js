@@ -1,21 +1,26 @@
 
 import * as Graph from '@buggyorg/graphtools'
-import {sanitize} from './utils'
+import {sanitize, variable, componentName} from './utils'
 import template from 'lodash/template'
-import negate from 'lodash/fp/negate'
 import merge from 'lodash/fp/merge'
 import flatten from 'lodash/fp/flatten'
 import mapValues from 'lodash/fp/mapValues'
 import * as Language from './language'
+import {typeName} from './types'
 
 const Node = Graph.Node
 
 function atomics (graph) {
-  return Graph.nodes(graph).filter(Node.isAtomic)
+  return Graph.atomics(graph)
 }
 
 function compounds (graph) {
-  return Graph.nodes(graph).filter(negate(Node.isAtomic)).concat(graph)
+  return Graph.compounds(graph).concat(graph)
+}
+
+function structs (graph) {
+  return Graph.components(graph).filter((c) =>
+    c.type && c.metaInformation.isConstructor)
 }
 
 /**
@@ -52,9 +57,11 @@ const generateTarget = (language, target) => (graph) => {
   // templImports object is completely defined. It would not work if we would write
   //
   // mapValues((str) => { var t = template(...); return (data) => t({data, graph})})
-  const templImports = merge({Node, sanitize, portArgument: (p) => p.port, Graph, flatten, atomics, compounds},
+  const constMethods = {Node, sanitize, portArgument: (p) => p.port,
+    Graph, flatten, atomics, compounds, structs, typeName, variable, componentName}
+  const templImports = merge(constMethods,
     mapValues((str) => (data) => template(str, {imports: templImports})({data, graph}), language.templates))
-  return template(Language.template(target, language), {imports: templImports})({graph})
+  return template(Language.template(target, language), {imports: templImports})({data: graph})
 }
 
 function addCode (graph, language) {
@@ -66,5 +73,6 @@ function addCode (graph, language) {
 
 export function codeFor (node, language) {
   if (!node.atomic) return
+  if (node.atomic && node.type) return generateTarget(language, 'typeImplementation')(node)
   return Language.implementation(node, language)
 }

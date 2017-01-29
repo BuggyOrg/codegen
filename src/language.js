@@ -13,6 +13,7 @@ import glob from 'glob'
 import {join, extname} from 'path'
 import fs from 'fs'
 import lTemplate from 'lodash/template'
+import {variable} from './utils'
 
 function renameProperty (isKey, willBeKey) {
   return (obj) => {
@@ -67,7 +68,7 @@ export function implementation (node, language) {
     throw new Error('Cannot get implementation for ' + node.componentId + ' in  language ' + name(language))
   }
   try {
-    return lTemplate(language.atomics[node.componentId], {imports: {variable: (name) => 'v_' + name}})(node)
+    return lTemplate(language.atomics[node.componentId], {imports: {variable}})(node)
   } catch (exc) {
     throw new Error('Error while compiling the code for the atomic: "' + node.componentId + '" (' + exc.message + ')')
   }

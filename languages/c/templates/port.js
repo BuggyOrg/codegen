@@ -1,6 +1,6 @@
 module.exports = {
 
-  portType: `<%= data.type === 'String' ? 'char' : 'IO' %>`,
+  portType: `<%= typeName(data.type) %>`,
   portName: `<%= data.port %>`,
   portVariable: `p_<%= data.port %>_<%= sanitize(data.node) %>`
 

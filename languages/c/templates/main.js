@@ -6,8 +6,17 @@ module.exports = {
 struct IO {
 };
 
-<%= atomics(graph).map(process).join('\\n') %>
-<%= compounds(graph).map(compound).join('\\n') %>
+struct String {
+  unsigned int length;
+  std::shared_ptr<char> data;
+};
+
+<%= structs(data).map(datastructures).join('\\n') %>
+
+typedef SPair StringPair;
+
+<%= atomics(data).map(process).join('\\n') %>
+<%= compounds(data).map(compound).join('\\n') %>
 
 int main (int argc, char** argv) {
   // create the IO context
