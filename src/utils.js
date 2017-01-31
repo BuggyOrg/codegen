@@ -21,7 +21,6 @@ export function componentName (node) {
     ((node.metaInformation && node.metaInformation.parameters) ? hash(node.metaInformation.parameters) : ''))
 }
 
-
 // thanks to ste2425
 // http://stackoverflow.com/a/35056218
 export function mapValuesDeep (cb, obj) {

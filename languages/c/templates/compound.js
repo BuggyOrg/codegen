@@ -4,12 +4,12 @@ void P_<%= componentName(data) %> (<%= Node.inputPorts(data, true).map((a) => 's
   `<%= (Node.outputPorts(data, true).length > 0 && Node.inputPorts(data, true).length > 0) ? ', ' : '' %>` +
   `<%= Node.outputPorts(data, true).map((a) => 'std::shared_ptr<' + portType(a) + '>& output_' + portName(a)).join(', ') %>) {
   // define edges
-  <%= Graph.edges(graph).map(defineEdge).join('\\n') %>
+  <%= Graph.edges(data).map(defineEdge).join('\\n') %>
 
   // store input ports
   <%= Node.inputPorts(data).map(compoundInputs).join('\\n') %>
 
-  <%= Graph.Algorithm.topologicalSort(graph).map(callProcess).join('\\n') %>
+  <%= Graph.Algorithm.topologicalSort(data).map(callProcess).join('\\n') %>
 }`,
 
   compoundInputs: `<%= Graph.outIncidents(data, graph).map(edgeName).map((i) => i + ' = input_' + data.port) %>;`,
