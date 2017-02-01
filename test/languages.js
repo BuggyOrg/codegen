@@ -55,8 +55,15 @@ describe('Languages', () => {
   })
 
   describe('Dependent languages', () => {
-    it('resolves templates ', () => {
-      
-    })
+    it('Resolves dependent templates', () =>
+      Language.hierarchy(['./test/fixtures/deplang1', './test/fixtures/lang1'])
+      .then((lang) => {
+        debugger
+        expect(Language.hasTemplate('T1.t1', lang)).to.be.true
+        expect(Language.hasTemplate('dep.tdep', lang)).to.be.false
+        expect(() => Language.templateBy('dep.tdep', lang)).to.throw(Error)
+        expect(Language.hasTemplate('dep.tdep', lang, {activate: true})).to.be.true
+        expect(Language.template('dep.tdep', lang, {activate: true})).to.be.ok
+      }))
   })
 })

@@ -104,16 +104,16 @@ function hasAtomic (component) {
   return (lang) => !!atomicById(component, lang)
 }
 
-export function hasImplementation (component, language) {
-  return some(hasAtomic(component), activeLanguage(language))
+export function hasImplementation (component, language, data) {
+  return some(hasAtomic(component), activeLanguage(language, data))
 }
 
-export function implementation (node, language) {
+export function implementation (node, language, data) {
   if (!hasImplementation(node.componentId, activeLanguage(language))) {
     throw new Error('Cannot get implementation for ' + node.componentId + ' in  language ' + name(language))
   }
   try {
-    return lTemplate(atomicById(node.componentId, find(hasAtomic(node.componentId), activeLanguage(language))), {imports: {variable}})(node)
+    return lTemplate(atomicById(node.componentId, find(hasAtomic(node.componentId), activeLanguage(language, data))), {imports: {variable}})(node)
   } catch (exc) {
     throw new Error('Error while compiling the code for the atomic: "' + node.componentId + '" (' + exc.message + ')')
   }
@@ -123,21 +123,22 @@ function templateInLang (tmpl) {
   return (lang) => has(tmpl, lang.templates)
 }
 
-export function template (tmpl, language) {
-  if (!hasTemplate(tmpl, activeLanguage(language))) {
+export function template (tmpl, language, data) {
+  if (!hasTemplate(tmpl, activeLanguage(language, data), data)) {
     throw new Error('Cannot get template "' + tmpl + '" in language ' + name(language))
   }
-  return get(tmpl, find(templateInLang(tmpl), activeLanguage(language)).templates)
+  return get(tmpl, find(templateInLang(tmpl), activeLanguage(language, data)).templates)
 }
 
-export function hasTemplate (tmpl, language) {
-  return some(templateInLang(tmpl), activeLanguage(language))
+export function hasTemplate (tmpl, language, data) {
+  return some(templateInLang(tmpl), activeLanguage(language, data))
 }
 
 function activeLanguage (language, data) {
-  return language
-}
-
-export function templateBy (tmpl, data, language) {
-  return template(tmpl, activeLanguage(language, data))
+  return language.filter((lang) => {
+    if (has('activate', lang)) {
+      return data && (typeof (data) === 'object') && lTemplate('<%= ' + lang.activate + ' %>')({data})
+    }
+    return true
+  })
 }

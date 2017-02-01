@@ -12,7 +12,8 @@ const expect = chai.expect
 describe('API methods', () => {
   describe('Source code generation', () => {
     it('returns a string', () => {
-      return expect(api.generateExecutable(graphAPI.empty(), {templates: {main: ''}}, {})).to.eventually.be.a('string')
+      const emptyLang = [{templates: {main: ''}, name: ''}]
+      return expect(api.generateExecutable(graphAPI.empty(), emptyLang, {})).to.eventually.be.a('string')
     })
   })
 })
