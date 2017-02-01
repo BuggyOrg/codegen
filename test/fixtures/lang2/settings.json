@@ -1,0 +1,4 @@
+{
+  "name": "test-language-2",
+  "extends": ["test-language-1"]
+}
