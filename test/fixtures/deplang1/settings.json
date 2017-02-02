@@ -1,4 +1,4 @@
 {
   "name": "dependent language 1",
-  "activate": "data.activate === true"
+  "activate": "activate === true"
 }

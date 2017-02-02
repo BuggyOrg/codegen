@@ -19,6 +19,7 @@
     "@buggyorg/graphtools": "^0.4.0-pre.19",
     "cli-ext": "^1.1.0",
     "glob": "^7.1.1",
+    "map-keys-deep-lodash": "^0.2.0",
     "object-hash": "^1.1.5",
     "promise-all": "^1.0.0",
     "yargs": "^6.6.0",

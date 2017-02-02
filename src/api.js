@@ -3,8 +3,8 @@ import * as Graph from '@buggyorg/graphtools'
 import {sanitize, variable, componentName} from './utils'
 import flatten from 'lodash/fp/flatten'
 import * as Language from './language'
-import {typeName} from './types'
 import * as vm from 'vm'
+import * as Types from './types'
 
 const Node = Graph.Node
 
@@ -36,7 +36,7 @@ export function generateExecutable (graph, language, options) {
   .then(generateTarget(language, 'main'))
 }
 
-const generateTarget = (language, target) => (graph) => {
+const generateTarget = (language, target, options) => (graph) => {
   // We want that in every template, every other template is available. E.g we have three templates:
   // - main
   // - process
@@ -46,8 +46,6 @@ const generateTarget = (language, target) => (graph) => {
   // access to the main and edgeName function and edgeName should have access to the other two. In this example
   // it seems unnecessary that edgeName has access to the other functions, but we do not want to specify any
   // dependencies in the general case. It is easier to allow every template to call every other template (and even itself).
-
-  // TODO What about other targets (like typeImplementation)?
 
   const sandbox = {Node, sanitize, portArgument: (p) => p.port,
     Graph, flatten, atomics, compounds, structs, typeName, variable, componentName, graph,
@@ -59,7 +57,32 @@ const generateTarget = (language, target) => (graph) => {
     vm.runInContext(template.code, context, {filename: template.path})
   }
 
-  return vm.runInContext(`(function() { return main() })`, context)()
+  return vm.runInContext(`(function() { return ${target}() })`, context)()
+  //
+  // We define templImports and use it inside the mapping below. The first argument of merge are the "always" available
+  // functions (independent of the target language). Then we map over all templates of a given language and
+  // create a function that takes a string (str, the template defined in the language) and an argument (the data)
+  // and with those calls the template function. The imports are "templImport" (a closure to the just defined imports)
+  // This is a bit tricky, but the template function is called here in a function, so it will use the value _after_ the
+  // templImports object is completely defined. It would not work if we would write
+  //
+  // mapValues((str) => { var t = template(...); return (data) => t({data, graph})})
+/*  const constMethods = {Node, sanitize, portArgument: (p) => p.port,
+    Graph, flatten, atomics, compounds, structs, Types, variable, componentName,
+    t: (name) => (data) => {
+      try {
+        return template(Language.template(name, language, {graph, options, imports: constMethods}), {imports: constMethods})({data, graph})
+      } catch (err) {
+        throw new Error('Problem while evaluating template "' + name + '"\n [' + err + ']')
+      }
+    }
+  }
+  try {
+    return template(Language.template(target, language, {graph, options, imports: constMethods}), {imports: constMethods})({data: graph, graph})
+  } catch (err) {
+    throw new Error('Problem while evaluating template "' + target + '"\n [' + err + ']')
+  }
+  */
 }
 
 function addCode (graph, language) {

@@ -6,26 +6,22 @@
  * - `library`: A library that exposes functions to other languages? (Not implemented)
  * @module Language
  */
-<<<<<<< 91e8eee3079632a83bba6f1567560a68ec62e815
-=======
+
 import merge from 'lodash/fp/merge'
 import keyBy from 'lodash/fp/keyBy'
 import mapValues from 'lodash/fp/mapValues'
 import flatten from 'lodash/fp/flatten'
 import find from 'lodash/fp/find'
+import omit from 'lodash/fp/omit'
 import some from 'lodash/fp/some'
 import get from 'lodash/fp/get'
 import has from 'lodash/fp/has'
->>>>>>> (test) Testing language features.
 import glob from 'glob'
 import {join, extname, resolve, basename} from 'path'
 import fs from 'fs'
 import {variable} from './utils'
-<<<<<<< 91e8eee3079632a83bba6f1567560a68ec62e815
 import * as babel from  'babel-core'
-=======
 import promiseAll from 'promise-all'
->>>>>>> (test) Testing language features.
 
 function renameProperty (isKey, willBeKey) {
   return (obj) => {
@@ -59,19 +55,10 @@ function gatherTemplates (path) {
   return mergeArrayIntoObject(gatherNamedFiles(templatesPath))
 }
 
-<<<<<<< 91e8eee3079632a83bba6f1567560a68ec62e815
-export function packLanguage (path) {
-  const absolutePath = resolve(path)
-  return {
-    atomics: gatherAtomics(absolutePath),
-    templates: gatherTemplates(absolutePath),
-    name: basename(absolutePath)
-=======
 function gatherSettings (path) {
   const settingsPath = join(path, 'settings.json')
   if (!fs.existsSync(settingsPath)) {
     return Promise.reject('Invalid language: Language has no `settings.json` [at ' + settingsPath + '].')
->>>>>>> (test) Testing language features.
   }
   return Promise.resolve(JSON.parse(fs.readFileSync(settingsPath, 'utf8')))
 }
@@ -86,10 +73,41 @@ export function packLanguage (path) {
 }
 
 /**
- * Returns a new language that uses a hierarchy of languages to resolve queries.
+ * Load a new language definition based on
+ *  - a packed language definition (stored as .json files)
+ *  - a language folder containing a settings.json and possibly some definitions
+ *  - an array of the above
+ *
+ * The loaded language (which may consist of multiple extensions and language definitions) will load
+ * the templates and implementations (of atomics) by the following laws.
+ *
+ *  1. If the language is activated or not. The settings.json can specify an activation strategy with which
+ *     the language decides whether it is active or not. If no such rule is given, the language is always active.
+ *     Otherwise the language will only be active if the given criteria is met. All defined templates and
+ *     implementations will only load if the language is active.
+ *  2. The order in the specified array. If the language is given as an array of extensions and language
+ *     definitions it will use the first found template/implementation (of any active language, see 1.).
+ *     The array defines a hierarchy of the languages.
+ *
+ * @params langs Specifier for the language(es) to load. This can be a path to a `.json` file or a
+ * path to a language folder. This language folder must contain a settings.json and may contain
+ * templates in a `templates` folder or atomics in an `atomics` folder.
+ * It also can specify an array of the above.
+ * @returns {Promise<Language>} A language composed of the languages specified in `langs`.
+ * If any of the languages is invalid or pathes point to a non existent file it will reject with
+ * an Error indicating which language is broken.
  */
-export function hierarchy (pathArr) {
-  return Promise.all(pathArr.map(packLanguage)).then((res) => flatten(res))
+export function loadLanguages (langs) {
+  if (!Array.isArray(langs)) return loadLanguages([langs])
+  return Promise.all(langs.map((l) => {
+    if (typeof (l) === 'string') { // assume path to language folder
+      return packLanguage(l)
+    } else if (Array.isArray(l)) {
+      return Promise.all(l)
+    } else {
+      return l
+    }
+  })).then(flatten)
 }
 
 export function name (language) {
@@ -109,7 +127,7 @@ export function hasImplementation (component, language, data) {
 }
 
 export function implementation (node, language, data) {
-  if (!hasImplementation(node.componentId, activeLanguage(language))) {
+  if (!hasImplementation(node.componentId, activeLanguage(language, data))) {
     throw new Error('Cannot get implementation for ' + node.componentId + ' in  language ' + name(language))
   }
   try {
@@ -123,6 +141,38 @@ function templateInLang (tmpl) {
   return (lang) => has(tmpl, lang.templates)
 }
 
+/**
+ * Returns the template string for the given template.
+ * @example <caption>settings.json</caption>
+ * {
+ *  "name": "c-threading",
+ *  // this is used inside the template function to determine whether to activate
+ *  // this language extension. The `data` field is the object on which the template
+ *  // is applied (usually the node).
+ *  "activate": "data.inAThread === true"
+ * }
+ * @example <caption>main.js (in c-threading template)</caption>
+ * // the contents of the main template in the C-threading language
+ * module.exports = {
+ *   main: `// c-threading main!`
+ * }
+ * @example
+ * // this will use the "c-threading"" template for main
+ * template('main', ['c-threading', 'c'], {data: {inAThread: true}})
+ *
+ * // this will _not_ use the "c-threading"" main template as it must be activated
+ * // if the "c" template has an "activate" condition or no "main" template the
+ * // next call will throw an exception
+ * template('main', ['c-threading', 'c'])
+ * // the "c-threading" extension must get activated explicitly!
+ *
+ * @params {String} tmpl The name of the template to generate.
+ * @params {Language} language The language definition that contains the template.
+ * @params [data] Optional context information that is used to determine what language features are
+ * active.
+ * @returns {String} The contents of the template in the first fitting language/language-extension defined.
+ * @throws {Error} If no template with the given name could be found.
+ */
 export function template (tmpl, language, data) {
   if (!hasTemplate(tmpl, activeLanguage(language, data), data)) {
     throw new Error('Cannot get template "' + tmpl + '" in language ' + name(language))
@@ -130,6 +180,37 @@ export function template (tmpl, language, data) {
   return get(tmpl, find(templateInLang(tmpl), activeLanguage(language, data)).templates)
 }
 
+/**
+ * Returns the whether the language defines the given template.
+  * @example <caption>settings.json</caption>
+ * {
+ *  "name": "c-threading",
+ *  // this is used inside the template function to determine whether to activate
+ *  // this language extension. The `data` field is the object on which the template
+ *  // is applied (usually the node).
+ *  "activate": "data.inAThread === true"
+ * }
+ * @example <caption>main.js (in c-threading template)</caption>
+ * // the contents of the main template in the C-threading language
+ * module.exports = {
+ *   main: `// c-threading main!`
+ * }
+ * @example
+ * // this will use the "c-threading"" template for main and thus return true
+ * hasTemplate('main', ['c-threading', 'c'], {data: {inAThread: true}})
+ *
+ * // this will _not_ use the "c-threading"" main template as it must be activated
+ * // if the "c" template has an "activate" condition or no "main" template the
+ * // next call will return false, otherwise true
+ * template('main', ['c-threading', 'c'])
+ * // the "c-threading" extension must get activated explicitly!
+ *
+ * @params {String} tmpl The name of the template to generate.
+ * @params {Language} language The language definition that contains the template.
+ * @params [data] Optional context information that is used to determine what language features are
+ * active.
+ * @returns {Boolean} True if the template is defined in any language/language-extension.
+ */
 export function hasTemplate (tmpl, language, data) {
   return some(templateInLang(tmpl), activeLanguage(language, data))
 }
@@ -137,7 +218,11 @@ export function hasTemplate (tmpl, language, data) {
 function activeLanguage (language, data) {
   return language.filter((lang) => {
     if (has('activate', lang)) {
-      return data && (typeof (data) === 'object') && lTemplate('<%= ' + lang.activate + ' %>')({data})
+      try {
+        return data && (typeof (data) === 'object') && lTemplate('<%= ' + lang.activate + ' %>', {imports: (data || {}).imports})(omit('imports', data))
+      } catch (err) {
+        return false
+      }
     }
     return true
   })

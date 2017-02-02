@@ -12,7 +12,7 @@ struct <%= data.name %> {
 
   structField: `  std::shared_ptr<<%= data.type %>> <%= data.name %>;`,
 
-  typeImplementation: `<%= ((data.metaInformation.isDestructor) ? destructor(data) : constructorCall(data)) %>`,
+  typeImplementation: ``, // `<%= ((data.metaInformation.isDestructor) ? destructor(data) : constructorCall(data)) %>`,
 
   constructorCall: `
   <%= constructorAssign({

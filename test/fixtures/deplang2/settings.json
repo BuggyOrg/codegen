@@ -1,0 +1,5 @@
+{
+  "name": "dependent language 2",
+  "description": "dependency based on imports",
+  "activate": "Node.isValid(data)"
+}

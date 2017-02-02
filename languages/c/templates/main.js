@@ -10,7 +10,7 @@ std::shared_ptr<IO> makeIO() {
 }
 `,
 
-  main: `
+  entry: `
 int main (int argc, char** argv) {
   // create the IO context
   std::shared_ptr<IO> io(makeIO());

@@ -1,12 +1,22 @@
 module.exports = {
   main: `
-<%= includes(data) %>
+<%= t('includes')(graph) %>
 
-<%= structs(data).map(Datastructures.definition).join('\\n') %>
+<%= structs(graph).map(t('Datastructures.definition')).join('\\n') %>
 
-<%= atomics(data).map(Process.definition).join('\\n') %>
-<%= compounds(data).map(Compound.definition).join('\\n') %>
+<%= atomics(graph).map(t('Process.definition')).join('\\n') %>
 
-<%= main(data) %>
+<%= t('entry')(data) %>
+`,
+
+  includes: `// nothing...`,
+
+  other: `
+<%= structs(graph).map(t('Datastructures.definition')).join('\\n') %>
+
+<%= atomics(graph).map(t('Process.definition')).join('\\n') %>
+<%= compounds(graph).map(t('Compound.definition')).join('\\n') %>
+
+<%= t('entry')(data) %>
 `
 }

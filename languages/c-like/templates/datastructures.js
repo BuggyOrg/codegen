@@ -2,36 +2,36 @@ module.exports = {
   Datastructures: {
     definition: `<%=
     (() => {
-      switch (structureType(data)) {
+      switch (Types.structureType(data)) {
         case 'Constructor':
-          return Datastructures.struct(structureData(data))
+          return t('Datastructures.struct')(Types.structureData(data))
         case 'TypeClass':
-          return Datastructures.typeclass(data)
+          return t('Datastructures.typeclass')(data)
       }
     }
-    )()`,
+    )() %>`,
 
     struct: `
 struct <%= data.name %> {
-<%= data.structure.contents.map(structField).join('\\n') %>
+<%= data.structure.contents.map(t('Datastructures.structField')).join('\\n') %>
 };`,
 
     structField: `  std::shared_ptr<<%= data.type %>> <%= data.name %>;`,
 
-    typeclass: `typedef <%= typeName(data.metaInformation.type) %> void;' %>`,
+    typeclass: `typedef <%= Types.typeName(data.metaInformation.type) %> void;' %>`,
 
     typeImplementation: `
 <%= (() => {
   switch (structureType(data)) {
     case 'Constructor':
-      return Datastructures.constructorCall(data)
+      return t('Datastructures.constructorCall')(data)
     case 'Destructor':
-      return Datastructures.destructor(data)
+      return t('Datastructures.destructor')(data)
   })() %>`,
 
     // cannot use constructor here as javascript sometimes also uses constructor in its objects..
     constructorCall: `
-    <%= constructorAssign({
+    <%= t('Datastructures.constructorAssign')({
       inputs: Node.inputPorts(data),
       output: Node.outputPorts(data)[0],
       type: data.metaInformation.datastructure
@@ -40,7 +40,7 @@ struct <%= data.name %> {
 
     constructorAssign: `
     <%= variable(data.output.port) %> = std::shared_ptr<<%= data.type.name %>>((<%= data.type.name %>*)malloc(sizeof(<%= data.type.name %>)));
-  <%= data.inputs.map((p, idx) => fieldAssign({
+  <%= data.inputs.map((p, idx) => t('Datastructures.fieldAssign')({
     name: variable(p.port),
     index: idx,
     type: data.type,
@@ -48,7 +48,7 @@ struct <%= data.name %> {
   })).join('\\n') %>
   `,
 
-    destructor: `<%= destructorAssign({
+    destructor: `<%= t('Datastructures.destructorAssign')({
       input: Node.inputPorts(data)[0],
       output: Node.outputPorts(data)[0],
       type: data.metaInformation.datastructure,
