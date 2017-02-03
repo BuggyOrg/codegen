@@ -1,15 +1,10 @@
 module.exports = {
   Datastructures: {
-    definition: `<%=
-    (() => {
-      switch (Types.structureType(data)) {
-        case 'Constructor':
-          return t('Datastructures.struct')(Types.structureData(data))
-        case 'TypeClass':
-          return t('Datastructures.typeclass')(data)
-      }
-    }
-    )() %>`,
+    definition: `<% if (Types.isConstructor(data)) { %>
+<%= t('Datastructures.struct')(Types.structureData(data)) %>
+<% } else if (Types.isTypeClass(data)) { %>
+<%= t('Datastructures.typeclass')(data) %>
+<% } %>`,
 
     struct: `
 struct <%= data.name %> {
@@ -18,24 +13,26 @@ struct <%= data.name %> {
 
     structField: `  std::shared_ptr<<%= data.type %>> <%= data.name %>;`,
 
-    typeclass: `typedef <%= Types.typeName(data.metaInformation.type) %> void;' %>`,
+    typeclass: `
+struct <%= Types.typeName(data.metaInformation.type) %> {
+  std::string subType;
+  std::shared_ptr<void> data;
+};
+`,
 
-    typeImplementation: `
-<%= (() => {
-  switch (structureType(data)) {
-    case 'Constructor':
-      return t('Datastructures.constructorCall')(data)
-    case 'Destructor':
-      return t('Datastructures.destructor')(data)
-  })() %>`,
+    typeImplementation: `<% if (Types.isConstructor(data)) { %>
+<%= t('Datastructures.constructorCall')(data) %>
+<% } else if (Types.isDestructor(data)) { %>
+<%= t('Datastructures.destructor')(data) %>
+<% } %>`,
 
     // cannot use constructor here as javascript sometimes also uses constructor in its objects..
     constructorCall: `
-    <%= t('Datastructures.constructorAssign')({
-      inputs: Node.inputPorts(data),
-      output: Node.outputPorts(data)[0],
-      type: data.metaInformation.datastructure
-    }) %>
+<%= t('Datastructures.constructorAssign')({
+  inputs: Node.inputPorts(data),
+  output: Node.outputPorts(data)[0],
+  type: data.metaInformation.datastructure
+}) %>
   `,
 
     constructorAssign: `

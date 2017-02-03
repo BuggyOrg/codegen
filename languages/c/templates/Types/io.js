@@ -1,9 +1,17 @@
 module.exports = {
-  IO: {
-    definition: `struct IO {};`,
-    copy: `
-printf("Cannot copy IO."); // impossible to copy IO.
-exit(EXIT_FAILURE);
-`
+  Types: {
+    IO: {
+      definition: `struct IO {};
+
+std::shared_ptr<IO> makeIO() {
+  return std::shared_ptr<IO>(new IO());
+}
+`,
+
+      copy: `
+  printf("Cannot copy IO."); // impossible to copy IO.
+  exit(EXIT_FAILURE);
+  `
+    }
   }
 }

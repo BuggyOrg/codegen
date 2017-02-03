@@ -131,7 +131,7 @@ export function implementation (node, language, data) {
     throw new Error('Cannot get implementation for ' + node.componentId + ' in  language ' + name(language))
   }
   try {
-    return lTemplate(atomicById(node.componentId, find(hasAtomic(node.componentId), activeLanguage(language, data))), {imports: {variable}})(node)
+    return lTemplate(atomicById(node.componentId, find(hasAtomic(node.componentId), activeLanguage(language, data))), {imports: {variable}})({node})
   } catch (exc) {
     throw new Error('Error while compiling the code for the atomic: "' + node.componentId + '" (' + exc.message + ')')
   }

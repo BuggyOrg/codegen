@@ -17,8 +17,7 @@ function compounds (graph) {
 }
 
 function structs (graph) {
-  return Graph.components(graph).filter((c) =>
-    c.type && c.metaInformation.isConstructor)
+  return Graph.components(graph).filter(Types.isType)
 }
 
 /**
@@ -85,17 +84,15 @@ const generateTarget = (language, target, options) => (graph) => {
   */
 }
 
-function addCode (graph, language) {
+function addCode (graph, language, options) {
   return Promise.resolve(atomics(graph)
     .reduce((gr, n) =>
-      Graph.replaceNode(n, Node.set({code: codeFor(n, language)}, n), gr),
+      Graph.replaceNode(n, Node.set({code: codeFor(n, language, options)}, n), gr),
       graph))
 }
 
-export function codeFor (node, language) {
+export function codeFor (node, language, options) {
   if (!node.atomic) return
-  if (node.atomic && node.type) return generateTarget(language, 'typeImplementation')(node)
-
-  const script = Language.implementation(node, language)
-  return vm.runInNewContext(script.code, {node}, {filename: script.path})
+  if (node.atomic && node.type) return generateTarget(language, 'Datastructures.typeImplementation', options)(node)
+  return generateTarget(language, 'Atomic', merge(options, {script: Language.implementation(node, language)}))
 }

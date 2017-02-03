@@ -1,13 +1,8 @@
 module.exports = {
   includes: `
 #include <memory>
+#include <cstdlib>
 #include <string.h>
-`,
-
-  makeIO: `
-std::shared_ptr<IO> makeIO() {
-  return new IO();
-}
 `,
 
   entry: `

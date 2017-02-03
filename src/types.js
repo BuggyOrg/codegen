@@ -8,15 +8,21 @@ export function typeName (type) {
   else return type.type.type
 }
 
-export function structureType (node) {
-  if (node.metaInformation && node.metaInformation &&
-    node.metaInformation.datastructure && node.metaInformation.isConstructor) {
-    return 'Constructor'
-  } else if (node.metaInformation && node.metaInformation.isDestructor) {
-    return 'Destructor'
-  } else {
-    return 'TypeClass'
-  }
+export function isConstructor (node) {
+  return node.metaInformation && node.metaInformation &&
+    node.metaInformation.datastructure && node.metaInformation.isConstructor
+}
+
+export function isDestructor (node) {
+  return node.metaInformation && node.metaInformation.isDestructor
+}
+
+export function isTypeClass (node) {
+  return !isConstructor(node) && !isDestructor(node)
+}
+
+export function isType (node) {
+  return node.type
 }
 
 export function structureData (node) {

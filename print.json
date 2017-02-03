@@ -22,9 +22,9 @@
       "componentId": "print",
       "version": "1.0.0",
       "atomic": true,
-      "id": "#ciyohpjsq0002tpluugmhhgr4",
+      "id": "#ciyq0jv5y00026plumt4kezpb",
       "path": [
-        "#ciyohpjsq0002tpluugmhhgr4"
+        "#ciyq0jv5y00026plumt4kezpb"
       ],
       "edges": []
     },
@@ -73,9 +73,9 @@
           }
         }
       },
-      "id": "#ciyohpjst0003tplu4ktvo8sv",
+      "id": "#ciyq0jv6200036pluosazron3",
       "path": [
-        "#ciyohpjst0003tplu4ktvo8sv"
+        "#ciyq0jv6200036pluosazron3"
       ],
       "edges": []
     },
@@ -99,25 +99,7 @@
         {
           "port": "output",
           "kind": "output",
-          "type": {
-            "type": {
-              "type": "StringPair"
-            },
-            "definition": {
-              "name": "SPair",
-              "data": [
-                {
-                  "type": "String"
-                },
-                {
-                  "type": "String"
-                },
-                {
-                  "type": "String"
-                }
-              ]
-            }
-          }
+          "type": "SPair"
         }
       ],
       "settings": {},
@@ -151,9 +133,9 @@
           }
         }
       },
-      "id": "#ciyohpjst0004tplunybyc3x1",
+      "id": "#ciyq0jv6200046plumzolklul",
       "path": [
-        "#ciyohpjst0004tplunybyc3x1"
+        "#ciyq0jv6200046plumzolklul"
       ],
       "edges": []
     },
@@ -176,9 +158,9 @@
       "version": "1.0.0",
       "atomic": true,
       "edges": [],
-      "id": "#ciyohpjsu0005tplu2ahyards",
+      "id": "#ciyq0jv6300056pluxrop9idh",
       "path": [
-        "#ciyohpjsu0005tplu2ahyards"
+        "#ciyq0jv6300056pluxrop9idh"
       ]
     },
     {
@@ -200,9 +182,9 @@
       "version": "1.0.0",
       "atomic": true,
       "edges": [],
-      "id": "#ciyohpjtl0006tpluvbclumj6",
+      "id": "#ciyq0jv6u00066plu3izfndu0",
       "path": [
-        "#ciyohpjtl0006tpluvbclumj6"
+        "#ciyq0jv6u00066plu3izfndu0"
       ]
     },
     {
@@ -224,9 +206,9 @@
       "version": "1.0.0",
       "atomic": true,
       "edges": [],
-      "id": "#ciyohpju10007tpludqsfimol",
+      "id": "#ciyq0jv7f00076pludr9zfkjo",
       "path": [
-        "#ciyohpju10007tpludqsfimol"
+        "#ciyq0jv7f00076pludr9zfkjo"
       ]
     }
   ],
@@ -235,13 +217,13 @@
     {
       "from": {
         "type": "generic",
-        "node": "#ciyohpjsu0005tplu2ahyards",
+        "node": "#ciyq0jv6300056pluxrop9idh",
         "port": "const",
         "kind": "output"
       },
       "to": {
         "type": "String",
-        "node": "#ciyohpjst0004tplunybyc3x1",
+        "node": "#ciyq0jv6200046plumzolklul",
         "port": "0",
         "kind": "input"
       },
@@ -250,13 +232,13 @@
     {
       "from": {
         "type": "generic",
-        "node": "#ciyohpjtl0006tpluvbclumj6",
+        "node": "#ciyq0jv6u00066plu3izfndu0",
         "port": "const",
         "kind": "output"
       },
       "to": {
         "type": "String",
-        "node": "#ciyohpjst0004tplunybyc3x1",
+        "node": "#ciyq0jv6200046plumzolklul",
         "port": "1",
         "kind": "input"
       },
@@ -265,13 +247,13 @@
     {
       "from": {
         "type": "generic",
-        "node": "#ciyohpju10007tpludqsfimol",
+        "node": "#ciyq0jv7f00076pludr9zfkjo",
         "port": "const",
         "kind": "output"
       },
       "to": {
         "type": "String",
-        "node": "#ciyohpjst0004tplunybyc3x1",
+        "node": "#ciyq0jv6200046plumzolklul",
         "port": "2",
         "kind": "input"
       },
@@ -279,32 +261,14 @@
     },
     {
       "from": {
-        "type": {
-          "type": {
-            "type": "StringPair"
-          },
-          "definition": {
-            "name": "SPair",
-            "data": [
-              {
-                "type": "String"
-              },
-              {
-                "type": "String"
-              },
-              {
-                "type": "String"
-              }
-            ]
-          }
-        },
-        "node": "#ciyohpjst0004tplunybyc3x1",
+        "type": "SPair",
+        "node": "#ciyq0jv6200046plumzolklul",
         "port": "output",
         "kind": "output"
       },
       "to": {
         "type": "SPair",
-        "node": "#ciyohpjst0003tplu4ktvo8sv",
+        "node": "#ciyq0jv6200036pluosazron3",
         "port": "in",
         "kind": "input"
       },
@@ -313,13 +277,13 @@
     {
       "from": {
         "type": "String",
-        "node": "#ciyohpjst0003tplu4ktvo8sv",
+        "node": "#ciyq0jv6200036pluosazron3",
         "port": "out",
         "kind": "output"
       },
       "to": {
         "type": "String",
-        "node": "#ciyohpjsq0002tpluugmhhgr4",
+        "node": "#ciyq0jv5y00026plumt4kezpb",
         "port": "text",
         "kind": "input"
       },
@@ -328,12 +292,12 @@
     {
       "from": {
         "type": "generic",
-        "node": "#ciyohpjsn0001tplu03v5ph2o",
+        "node": "#ciyq0jv5w00016plu397a4hgp",
         "port": "IO"
       },
       "to": {
         "type": "IO",
-        "node": "#ciyohpjsq0002tpluugmhhgr4",
+        "node": "#ciyq0jv5y00026plumt4kezpb",
         "port": "IO_in",
         "kind": "input"
       },
@@ -343,13 +307,13 @@
     {
       "from": {
         "type": "IO",
-        "node": "#ciyohpjsq0002tpluugmhhgr4",
+        "node": "#ciyq0jv5y00026plumt4kezpb",
         "port": "IO_out",
         "kind": "output"
       },
       "to": {
         "type": "generic",
-        "node": "#ciyohpjsn0001tplu03v5ph2o",
+        "node": "#ciyq0jv5w00016plu397a4hgp",
         "port": "value"
       },
       "layer": "dataflow",
@@ -411,25 +375,7 @@
         {
           "port": "output",
           "kind": "output",
-          "type": {
-            "type": {
-              "type": "StringPair"
-            },
-            "definition": {
-              "name": "SPair",
-              "data": [
-                {
-                  "type": "String"
-                },
-                {
-                  "type": "String"
-                },
-                {
-                  "type": "String"
-                }
-              ]
-            }
-          }
+          "type": "SPair"
         }
       ],
       "version": "0.0.0",
@@ -646,7 +592,7 @@
     }
   ],
   "atomic": false,
-  "id": "#ciyohpjsn0001tplu03v5ph2o",
+  "id": "#ciyq0jv5w00016plu397a4hgp",
   "version": "0.0.0",
   "componentId": "main"
 }
