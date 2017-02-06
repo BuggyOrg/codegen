@@ -19,7 +19,7 @@ var argv = yargs
   .alias('l', 'language')
   .describe('l', 'Specify a language that should be used to create the code.')
   .command('pack-language', 'Pack language information into a JSON document and print it.', { demand: 1 },
-    command((yargs) => console.log(packLanguage(normalize(yargs._[1])))))
+    command((yargs) => console.log(JSON.stringify(packLanguage(normalize(yargs._[1]))))))
   .argv
 
 if (!global.wasCommand) {

@@ -6,14 +6,11 @@
  * - `library`: A library that exposes functions to other languages? (Not implemented)
  * @module Language
  */
-import merge from 'lodash/fp/merge'
-import keyBy from 'lodash/fp/keyBy'
-import mapValues from 'lodash/fp/mapValues'
 import glob from 'glob'
-import {join, extname} from 'path'
+import {join, extname, resolve, basename} from 'path'
 import fs from 'fs'
-import lTemplate from 'lodash/template'
 import {variable} from './utils'
+import * as babel from  'babel-core'
 
 function renameProperty (isKey, willBeKey) {
   return (obj) => {
@@ -23,35 +20,36 @@ function renameProperty (isKey, willBeKey) {
   }
 }
 
+function mergeArrayIntoObject (array) {
+  return Object.assign(...array)
+}
+
 function pathToName (basePath) {
   return (path) =>
     path.slice(basePath.length + 1, -extname(path).length)
 }
 
-function gatherNamedFiles (path, readContent) {
+function gatherNamedFiles (path) {
   return glob.sync(join(path + '/**/*.js'))
-    .map((p) => ({name: pathToName(path)(p), path: p, contents: (readContent) ? fs.readFileSync(p, 'utf8') : undefined}))
+    .map((p) => ({[pathToName(path)(p)]: {path: p, code: babel.transformFileSync(p, {}).code}}))
 }
 
 function gatherAtomics (path) {
   const atomicsPath = join(path, 'atomics')
-  return mapValues((v) => v.contents,
-    keyBy('component', gatherNamedFiles(atomicsPath, true).map(renameProperty('name', 'component'))))
+  return mergeArrayIntoObject(gatherNamedFiles(atomicsPath))
 }
 
 function gatherTemplates (path) {
   const templatesPath = join(path, 'templates')
-  return gatherNamedFiles(templatesPath)
-    .map(renameProperty('name', 'template'))
-    .map((temp) => require(join(__dirname, '../', temp.path)))
-    .reduce((obj, cur) => merge(obj, cur), {})
+  return mergeArrayIntoObject(gatherNamedFiles(templatesPath))
 }
 
 export function packLanguage (path) {
+  const absolutePath = resolve(path)
   return {
-    atomics: gatherAtomics(path),
-    templates: gatherTemplates(path),
-    name: 'Javascript'
+    atomics: gatherAtomics(absolutePath),
+    templates: gatherTemplates(absolutePath),
+    name: basename(absolutePath)
   }
 }
 
@@ -67,11 +65,8 @@ export function implementation (node, language) {
   if (!hasImplementation(node.componentId, language)) {
     throw new Error('Cannot get implementation for ' + node.componentId + ' in  language ' + name(language))
   }
-  try {
-    return lTemplate(language.atomics[node.componentId], {imports: {variable}})(node)
-  } catch (exc) {
-    throw new Error('Error while compiling the code for the atomic: "' + node.componentId + '" (' + exc.message + ')')
-  }
+
+  return language.atomics[node.componentId]
 }
 
 export function template (name, language) {
