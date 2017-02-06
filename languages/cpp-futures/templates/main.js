@@ -1,7 +1,5 @@
 function main() {
 
-  console.error("asdlfjadslkjflkaj")
-
   const atomic_def = atomics(graph).map(atomic_process).join('\n\n')
   const compound_def = compounds(graph).map((node) => compound_process(node, graph)).join('\n\n')
   const main_name = compounds(graph).filter((n) => n.componentId === 'main')[0]

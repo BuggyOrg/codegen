@@ -51,7 +51,7 @@ const generateTarget = (language, target) => (graph) => {
 
   const sandbox = {Node, sanitize, portArgument: (p) => p.port,
     Graph, flatten, atomics, compounds, structs, typeName, variable, componentName, graph,
-    /* debug helpers */ JSON}
+    /* debug helpers */ console, JSON}
   const context = new vm.createContext(sandbox)
 
   for (const templateName in language.templates) {
