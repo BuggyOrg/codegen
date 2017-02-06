@@ -71,6 +71,7 @@ cat ../../generated/complex-add.json | node lib/cli.js -l languages/cpp-futures
 
 - Worse performance. JavaScript files need to be transpiled and then compiled.
     - The transpiling can be skipped if a packaged definition is used. But transpiling is not the most expensive in this case.
+    
     ```
     cat ../../programs/complex-add.clj
     # -> (defco main [IO] (let [a (math/add 5 5)
