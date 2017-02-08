@@ -1,4 +1,3 @@
-/* eslint no-eval: 0 */
 /**
  * The language definition is a data store that contains information about the implementation of every atomic and
  * the necessary templates to create certain artifacts. Possible artifacts are
@@ -15,9 +14,8 @@ import some from 'lodash/fp/some'
 import get from 'lodash/fp/get'
 import has from 'lodash/fp/has'
 import glob from 'glob'
-import {join} from 'path'
+import {join, extname} from 'path'
 import fs from 'fs'
-import * as babel from 'babel-core'
 import promiseAll from 'promise-all'
 
 function mergeArrayIntoObject (array) {
@@ -25,53 +23,46 @@ function mergeArrayIntoObject (array) {
   return Object.assign({}, ...array)
 }
 
-/*
 function pathToName (basePath) {
   return (path) =>
     path.slice(basePath.length + 1, -extname(path).length)
 }
-*/
+
+function isLanguageDirectory (path) {
+  return fs.existsSync(path) && fs.statSync(path).isDirectory()
+}
 
 function gatherNamedFiles (path) {
   return glob.sync(join(path + '/**/*.js'))
-    .map((p) => ({path: p, code: babel.transformFileSync(p, {}).code}))
+    .map((p) => ({[pathToName(path)(p)]: {path: p, code: fs.readFileSync(p, 'utf8')}}))
 }
 
 function gatherAtomics (path) {
   const atomicsPath = join(path, 'atomics')
   return mergeArrayIntoObject(
-    gatherNamedFiles(atomicsPath)
-    .map((f) => eval('((module) => { ' + f.code + ' \n ;return module})')({}).exports))
+    gatherNamedFiles(atomicsPath))
 }
 
 function gatherTemplates (path) {
   const templatesPath = join(path, 'templates')
   return mergeArrayIntoObject(
-    gatherNamedFiles(templatesPath)
-    .map((f) => eval('((module) => { ' + f.code + ' \n ;return module})')({}).exports))
+    gatherNamedFiles(templatesPath))
 }
 
-/**
- * Each language may have an activation that is stored as an javascript expression inside the
- * `settings.json`. This must be parsed to run it at later stages.
- */
-function parseActivation (settings) {
-  return (settings.activate)
-  ? Object.assign({}, settings, {activation: eval('((data) => ' + settings.activate + ')')})
-  : Object.assign({}, settings, {activation: eval('((data) => true)')})
-}
-
-function gatherSettings (path) {
+function gatherSettings (path, engine) {
   const settingsPath = join(path, 'settings.json')
   if (!fs.existsSync(settingsPath)) {
     return Promise.reject('Invalid language: Language has no `settings.json` [at ' + settingsPath + '].')
   }
   return Promise.resolve(JSON.parse(fs.readFileSync(settingsPath, 'utf8')))
-  .then((settings) => parseActivation(settings))
 }
 
-export function packLanguage (path) {
-  return promiseAll({settings: gatherSettings(path), atomics: gatherAtomics(path), templates: gatherTemplates(path)})
+function packLanguage (path, engine) {
+  return promiseAll({
+    settings: gatherSettings(path, engine),
+    atomics: gatherAtomics(path, engine),
+    templates: gatherTemplates(path, engine)
+  })
   .then((res) =>
     // each language is an array of language definitions / extensions. If we load exactly one language
     // pack it inside an array.
@@ -79,6 +70,40 @@ export function packLanguage (path) {
       atomics: res.atomics,
       templates: res.templates
     })])
+}
+
+/**
+ * Creates a packaged language file from a sequence of languages. Note that the order in which the
+ * languages are specified matters, i.e. languages that are defined earlier in the paths array
+ * are the first to use when looking for an atomic or a template.
+ */
+export function packLanguages (paths, engine) {
+  if (!Array.isArray(paths)) return packLanguages([paths], engine)
+  return Promise.all(paths.map((p) => packLanguage(p, engine)))
+}
+
+/**
+ * Each language may have an activation that is stored as an javascript expression inside the
+ * `settings.json`. This must be parsed to run it at later stages.
+ */
+function parseActivation (settings, engine) {
+  return (settings.activate)
+  ? engine.activation(settings.activate)
+  : engine.activation('true')
+}
+
+/**
+ * Go through all templates and atomics and create the corresponding callable
+ * functions from the package.
+ */
+function createCallables (language, engine) {
+  return {
+    activation: engine.exports(parseActivation(language, engine)),
+    atomics: mergeArrayIntoObject(
+      Object.keys(language.atomics).map((k) => engine.exports(language.atomics[k]))),
+    templates: mergeArrayIntoObject(
+      Object.keys(language.templates).map((k) => engine.exports(language.templates[k])))
+  }
 }
 
 /**
@@ -106,21 +131,32 @@ export function packLanguage (path) {
  * If any of the languages is invalid or pathes point to a non existent file it will reject with
  * an Error indicating which language is broken.
  */
-export function loadLanguages (langs) {
-  if (!Array.isArray(langs)) return loadLanguages([langs])
+export function loadLanguages (langs, engine) {
+  if (!Array.isArray(langs)) return loadLanguages([langs], engine)
   return Promise.all(langs.map((l) => {
-    if (typeof (l) === 'string') { // assume path to language folder
-      return packLanguage(l)
+    if (typeof (l) === 'string' && isLanguageDirectory(l)) { // assume path to language folder
+      return packLanguage(l, engine)
+    } else if (typeof (l) === 'string') { // assume it is a packed language (i.e. a json file)
+      try {
+        return JSON.parse(fs.readFileSync(l, 'utf8'))
+      } catch (err) {
+        return Promise.reject(err)
+      }
     } else if (Array.isArray(l)) {
       return Promise.all(l)
     } else {
       return l
     }
   })).then(flatten)
+  .then((langs) => ({
+    name: langs[0].name + ((langs.length > 1) ? '(+' + langs.length + ')' : ''),
+    languages: langs,
+    callables: langs.map((l) => createCallables(l, engine))
+  }))
 }
 
 export function name (language) {
-  return language[0].name
+  return language.name
 }
 
 function atomicById (id, lang) {
@@ -226,7 +262,8 @@ export function hasTemplate (tmpl, language, data) {
 }
 
 function activeLanguage (language, data) {
-  return language.filter((lang) => {
+  if (!language.callables) return language // already selected active language
+  return language.callables.filter((lang) => {
     try {
       return lang.activation(data)
     } catch (err) {

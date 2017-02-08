@@ -32,7 +32,7 @@ function structs (graph) {
  */
 export function generateExecutable (graph, language, options) {
   return addCode(graph, language, options)
-  .then(generateTarget(language, 'main'))
+  .then(generateTarget(language, 'main', options))
 }
 
 const generateTarget = (language, target, options) => (graph) => {
@@ -56,7 +56,7 @@ const generateTarget = (language, target, options) => (graph) => {
     vm.runInContext(template.code, context, {filename: template.path})
   }
 
-  return vm.runInContext(`(function() { return ${target}() })`, context)()
+  return vm.runInContext(`${target}`, context)(graph)
   //
   // We define templImports and use it inside the mapping below. The first argument of merge are the "always" available
   // functions (independent of the target language). Then we map over all templates of a given language and
