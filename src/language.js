@@ -1,3 +1,4 @@
+/* eslint no-eval: 0 */
 /**
  * The language definition is a data store that contains information about the implementation of every atomic and
  * the necessary templates to create certain artifacts. Possible artifacts are
@@ -8,51 +9,56 @@
  */
 
 import merge from 'lodash/fp/merge'
-import keyBy from 'lodash/fp/keyBy'
-import mapValues from 'lodash/fp/mapValues'
 import flatten from 'lodash/fp/flatten'
 import find from 'lodash/fp/find'
-import omit from 'lodash/fp/omit'
 import some from 'lodash/fp/some'
 import get from 'lodash/fp/get'
 import has from 'lodash/fp/has'
 import glob from 'glob'
-import {join, extname, resolve, basename} from 'path'
+import {join} from 'path'
 import fs from 'fs'
-import {variable} from './utils'
-import * as babel from  'babel-core'
+import * as babel from 'babel-core'
 import promiseAll from 'promise-all'
 
-function renameProperty (isKey, willBeKey) {
-  return (obj) => {
-    obj[willBeKey] = obj[isKey]
-    delete obj[isKey]
-    return obj
-  }
-}
-
 function mergeArrayIntoObject (array) {
-  return Object.assign(...array)
+  // fails if the array is empty and there is no first argument
+  return Object.assign({}, ...array)
 }
 
+/*
 function pathToName (basePath) {
   return (path) =>
     path.slice(basePath.length + 1, -extname(path).length)
 }
+*/
 
 function gatherNamedFiles (path) {
   return glob.sync(join(path + '/**/*.js'))
-    .map((p) => ({[pathToName(path)(p)]: {path: p, code: babel.transformFileSync(p, {}).code}}))
+    .map((p) => ({path: p, code: babel.transformFileSync(p, {}).code}))
 }
 
 function gatherAtomics (path) {
   const atomicsPath = join(path, 'atomics')
-  return mergeArrayIntoObject(gatherNamedFiles(atomicsPath))
+  return mergeArrayIntoObject(
+    gatherNamedFiles(atomicsPath)
+    .map((f) => eval('((module) => { ' + f.code + ' \n ;return module})')({}).exports))
 }
 
 function gatherTemplates (path) {
   const templatesPath = join(path, 'templates')
-  return mergeArrayIntoObject(gatherNamedFiles(templatesPath))
+  return mergeArrayIntoObject(
+    gatherNamedFiles(templatesPath)
+    .map((f) => eval('((module) => { ' + f.code + ' \n ;return module})')({}).exports))
+}
+
+/**
+ * Each language may have an activation that is stored as an javascript expression inside the
+ * `settings.json`. This must be parsed to run it at later stages.
+ */
+function parseActivation (settings) {
+  return (settings.activate)
+  ? Object.assign({}, settings, {activation: eval('((data) => ' + settings.activate + ')')})
+  : Object.assign({}, settings, {activation: eval('((data) => true)')})
 }
 
 function gatherSettings (path) {
@@ -61,11 +67,14 @@ function gatherSettings (path) {
     return Promise.reject('Invalid language: Language has no `settings.json` [at ' + settingsPath + '].')
   }
   return Promise.resolve(JSON.parse(fs.readFileSync(settingsPath, 'utf8')))
+  .then((settings) => parseActivation(settings))
 }
 
 export function packLanguage (path) {
   return promiseAll({settings: gatherSettings(path), atomics: gatherAtomics(path), templates: gatherTemplates(path)})
   .then((res) =>
+    // each language is an array of language definitions / extensions. If we load exactly one language
+    // pack it inside an array.
     [merge(res.settings, {
       atomics: res.atomics,
       templates: res.templates
@@ -131,7 +140,8 @@ export function implementation (node, language, data) {
     throw new Error('Cannot get implementation for ' + node.componentId + ' in  language ' + name(language))
   }
   try {
-    return lTemplate(atomicById(node.componentId, find(hasAtomic(node.componentId), activeLanguage(language, data))), {imports: {variable}})({node})
+    // select extension that defines the atomic and search inside this language
+    return atomicById(node.componentId, find(hasAtomic(node.componentId), activeLanguage(language, data)))(data)
   } catch (exc) {
     throw new Error('Error while compiling the code for the atomic: "' + node.componentId + '" (' + exc.message + ')')
   }
@@ -217,13 +227,10 @@ export function hasTemplate (tmpl, language, data) {
 
 function activeLanguage (language, data) {
   return language.filter((lang) => {
-    if (has('activate', lang)) {
-      try {
-        return data && (typeof (data) === 'object') && lTemplate('<%= ' + lang.activate + ' %>', {imports: (data || {}).imports})(omit('imports', data))
-      } catch (err) {
-        return false
-      }
+    try {
+      return lang.activation(data)
+    } catch (err) {
+      return false
     }
-    return true
   })
 }

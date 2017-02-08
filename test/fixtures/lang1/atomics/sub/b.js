@@ -1,1 +1,3 @@
-atomic_sub/b
+module.exports = {
+  'sub/b': () => 'atomic_sub_b'
+}

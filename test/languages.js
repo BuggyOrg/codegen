@@ -18,7 +18,7 @@ describe('Languages', () => {
     it('Gets the code for an atomic', () =>
       Language.packLanguage('./test/fixtures/lang1')
       .then((lang) => {
-        expect(Language.implementation({componentId: 'sub/b'}, lang)).to.equal('atomic_sub/b')
+        expect(Language.implementation({componentId: 'sub/b'}, lang)).to.match(/atomic_sub_b/)
       }))
   })
 

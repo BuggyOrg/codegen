@@ -1,1 +1,3 @@
-c_atomic
+module.exports = {
+  c: () => 'c_atomic'
+}

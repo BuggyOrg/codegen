@@ -47,9 +47,9 @@ const generateTarget = (language, target, options) => (graph) => {
   // dependencies in the general case. It is easier to allow every template to call every other template (and even itself).
 
   const sandbox = {Node, sanitize, portArgument: (p) => p.port,
-    Graph, flatten, atomics, compounds, structs, typeName, variable, componentName, graph,
+    Graph, flatten, atomics, compounds, structs, Types, variable, componentName, graph,
     /* debug helpers */ console, JSON}
-  const context = new vm.createContext(sandbox)
+  const context = vm.createContext(sandbox)
 
   for (const templateName in language.templates) {
     const template = language.templates[templateName]
@@ -94,5 +94,5 @@ function addCode (graph, language, options) {
 export function codeFor (node, language, options) {
   if (!node.atomic) return
   if (node.atomic && node.type) return generateTarget(language, 'Datastructures.typeImplementation', options)(node)
-  return generateTarget(language, 'Atomic', merge(options, {script: Language.implementation(node, language)}))
+  return generateTarget(language, 'Atomic', Language.implementation(node, language, options))(node)
 }

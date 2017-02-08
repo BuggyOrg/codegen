@@ -1,1 +1,3 @@
-atomic_A
+module.exports = {
+  a: () => 'atomic_A'
+}
