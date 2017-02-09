@@ -36,5 +36,12 @@ describe('API methods', () => {
       return expect(packLanguages(['./test/fixtures/deplang2', './test/fixtures/lang1'])
       .then((eLang) => api.generateExecutable(graphAPI.empty(), eLang, {}))).to.eventually.equal('t1-dependent;t2-content')
     })
+
+    it('Creates code for atomics correctly', () => {
+      const graph = graphAPI.addNode(
+        {componentId: 'atomic', ports: [{port: 'a', kind: 'input', type: 'Number'}], atomic: true}, graphAPI.empty())
+      return expect(packLanguages('./test/fixtures/atomics')
+      .then((eLang) => api.generateExecutable(graph, eLang, {}))).to.eventually.equal('<atomic-code>')
+    })
   })
 })

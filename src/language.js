@@ -14,7 +14,7 @@ import some from 'lodash/fp/some'
 import get from 'lodash/fp/get'
 import has from 'lodash/fp/has'
 import glob from 'glob'
-import {join, extname} from 'path'
+import {join, dirname} from 'path'
 import fs from 'fs'
 import promiseAll from 'promise-all'
 
@@ -25,7 +25,7 @@ function mergeArrayIntoObject (array) {
 
 function pathToName (basePath) {
   return (path) =>
-    path.slice(basePath.length + 1, -extname(path).length)
+    path.slice(dirname(dirname(basePath)).length + 1)
 }
 
 function isLanguageDirectory (path) {
@@ -226,16 +226,16 @@ function templateInLang (tmpl) {
  *
  * @params {String} tmpl The name of the template to generate.
  * @params {Language} language The language definition that contains the template.
- * @params [data] Optional context information that is used to determine what language features are
- * active.
+ * @params [context] Optional context information that is used to determine what language features are
+ * active. The context contains the options and the current parameter of the function.
  * @returns {String} The contents of the template in the first fitting language/language-extension defined.
  * @throws {Error} If no template with the given name could be found.
  */
-export function template (tmpl, language, data) {
-  if (!hasTemplate(tmpl, activeLanguage(language, data), data)) {
+export function template (tmpl, language, context) {
+  if (!hasTemplate(tmpl, activeLanguage(language, context), context)) {
     throw new Error('Cannot get template "' + tmpl + '" in language ' + name(language))
   }
-  return get(tmpl, find(templateInLang(tmpl), activeLanguage(language, data)).templates)
+  return get(tmpl, find(templateInLang(tmpl), activeLanguage(language, context)).templates)
 }
 
 /**
@@ -265,19 +265,19 @@ export function template (tmpl, language, data) {
  *
  * @params {String} tmpl The name of the template to generate.
  * @params {Language} language The language definition that contains the template.
- * @params [data] Optional context information that is used to determine what language features are
- * active.
+ * @params [context] Optional context information that is used to determine what language features are
+ * active. The context contains the options and the current parameter of the function.
  * @returns {Boolean} True if the template is defined in any language/language-extension.
  */
-export function hasTemplate (tmpl, language, data) {
-  return some(templateInLang(tmpl), activeLanguage(language, data))
+export function hasTemplate (tmpl, language, context) {
+  return some(templateInLang(tmpl), activeLanguage(language, context))
 }
 
-function activeLanguage (language, data) {
+function activeLanguage (language, context) {
   if (!language.callables) return language // already selected active language
   return language.callables.filter((lang) => {
     try {
-      return lang.activation(data)
+      return lang.activation(context)
     } catch (err) {
       return false
     }

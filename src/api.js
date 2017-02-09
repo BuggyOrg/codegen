@@ -25,6 +25,8 @@ function createContext (graph, options, llang) {
   return Object.assign({}, {Node, sanitize, portArgument: (p) => p.port,
     Graph, flatten, atomics, compounds, structs, Types, variable, componentName, graph,
     console, JSON,
+    // llang.lang is updated when the language is loaded to enable template on the just loaded language.
+    // while creating the context, llang will be null!
     t: (name) => (data) => Language.template(name, llang.lang, {options, data})(data)})
   /* eslint-enable object-property-newline */
 }
@@ -43,7 +45,7 @@ export function generateExecutable (graph, language, options) {
   // a bit cheesy...
   var langObj = {lang: null} // we need this inside the context.. but get it afterwards..
   return Language.loadLanguages(language, BabelVM(createContext(graph, options, langObj)))
-  .then((lang) => { langObj.lang = lang; return lang })
+  .then((lang) => { langObj.lang = lang; return lang }) // we set the lang here.. after createing the context
   .then((lang) => addCode(graph, lang, options)
     .then(Language.template('main', lang, options)))
 }
@@ -58,5 +60,5 @@ function addCode (graph, language, options) {
 export function codeFor (node, language, options) {
   if (!node.atomic) return
   if (node.atomic && node.type) return Language.template('Datastructures.typeImplementation', language, options)(node)
-  return Language.template('Atomic', language, Language.implementation(node, language, options))(node)
+  return Language.template('Atomic', language, {options, data: node})(Language.implementation(node, language, options))
 }

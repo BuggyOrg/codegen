@@ -11,6 +11,6 @@ export default (context) => ({
   activation: (code) => 'module.exports = ((context) => ' + code + ')',
   exports: (code, path) =>
     vm.runInNewContext('((module) => { ' +
-      babel.transform(code).code + ' \n ;return module})',
-      Object.freeze(context), {path})({}).exports
+      babel.transform(code, {filename: path}).code + ' \n ;return module})',
+      Object.freeze(context), {filename: path})({}).exports
 })
