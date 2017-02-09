@@ -26,7 +26,7 @@ function structs (graph) {
  * @description
  * Creates the source code for an executable using the given graph in the specified language.
  * @param {PortGraph} graph The graph that contains the program.
- * @param {Language} language A language definition see [Language]{@link module:Language}.
+ * @param {Language} language A (loaded) language definition see [Language]{@link module:Language}.
  * @param {object} options An optional flag with specific translation properties.
  * @return {string} The source code of the program.
  */

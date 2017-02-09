@@ -10,8 +10,7 @@ const expect = chai.expect
 
 const evalEngine = {
   activation: (code) => 'module.exports = ((data) => ' + code + ')',
-  exports: (file) => eval('((module) => { ' + ((file.code) ? file.code : file) + ' \n ;return module})')({}).exports,
-  load: (file) => fs.readFileSync(file, 'utf8')
+  exports: (file) => eval('((module) => { ' + ((file.code) ? file.code : file) + ' \n ;return module})')({}).exports
 }
 
 describe('Languages', () => {
@@ -36,7 +35,7 @@ describe('Languages', () => {
     }))
 
   it('Fails to load a language if the settings.json is missing.', () =>
-    expect(Language.packLanguages('./test/fixtures/non-existent', evalEngine))
+    expect(Language.packLanguages('./test/fixtures/invalid', evalEngine))
       .to.be.rejectedWith(/Invalid language/))
 
   it('Complains if the language cannot be found', () =>

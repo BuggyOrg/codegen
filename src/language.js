@@ -34,7 +34,7 @@ function isLanguageDirectory (path) {
 
 function gatherNamedFiles (path) {
   return glob.sync(join(path + '/**/*.js'))
-    .map((p) => ({[pathToName(path)(p)]: {path: p, code: fs.readFileSync(p, 'utf8')}}))
+    .map((p) => ({[pathToName(path)(p)]: {path: pathToName(path)(p), code: fs.readFileSync(p, 'utf8')}}))
 }
 
 function gatherAtomics (path) {
@@ -79,7 +79,21 @@ function packLanguage (path, engine) {
  */
 export function packLanguages (paths, engine) {
   if (!Array.isArray(paths)) return packLanguages([paths], engine)
-  return Promise.all(paths.map((p) => packLanguage(p, engine)))
+  return Promise.all(paths.map((p) => {
+    if (typeof (p) === 'string' && isLanguageDirectory(p)) { // assume path to language folder
+      return packLanguage(p, engine)
+    } else if (typeof (p) === 'string') { // assume it is a packed language (i.e. a json file)
+      try {
+        return JSON.parse(fs.readFileSync(p, 'utf8'))
+      } catch (err) {
+        return Promise.reject(err)
+      }
+    } else if (Array.isArray(p)) {
+      return packLanguages(p)
+    } else {
+      return p
+    }
+  }))
 }
 
 /**
@@ -133,21 +147,7 @@ function createCallables (language, engine) {
  */
 export function loadLanguages (langs, engine) {
   if (!Array.isArray(langs)) return loadLanguages([langs], engine)
-  return Promise.all(langs.map((l) => {
-    if (typeof (l) === 'string' && isLanguageDirectory(l)) { // assume path to language folder
-      return packLanguage(l, engine)
-    } else if (typeof (l) === 'string') { // assume it is a packed language (i.e. a json file)
-      try {
-        return JSON.parse(fs.readFileSync(l, 'utf8'))
-      } catch (err) {
-        return Promise.reject(err)
-      }
-    } else if (Array.isArray(l)) {
-      return Promise.all(l)
-    } else {
-      return l
-    }
-  })).then(flatten)
+  return packLanguages(langs, engine).then(flatten)
   .then((langs) => ({
     name: langs[0].name + ((langs.length > 1) ? '(+' + langs.length + ')' : ''),
     languages: langs,
