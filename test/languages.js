@@ -1,16 +1,16 @@
-/* global describe, it, eslint no-eval: 0 */
+/* global describe, it */
+/* eslint no-eval: 0 */
 
 import chai from 'chai'
 import chaiAsPromised from 'chai-as-promised'
 import * as Language from '../src/language.js'
-import fs from 'fs'
 
 chai.use(chaiAsPromised)
 const expect = chai.expect
 
 const evalEngine = {
-  activation: (code) => 'module.exports = ((data) => ' + code + ')',
-  exports: (file) => eval('((module) => { ' + ((file.code) ? file.code : file) + ' \n ;return module})')({}).exports
+  activation: (code) => 'module.exports = ((context) => ' + code + ')',
+  exports: (code, path) => eval('((module) => { ' + code + ' \n ;return module})')({}).exports
 }
 
 describe('Languages', () => {
@@ -55,8 +55,8 @@ describe('Languages', () => {
     it('Can create an hierarchy of languages', () =>
       Language.loadLanguages(['./test/fixtures/lang2', './test/fixtures/lang1'], evalEngine)
       .then((lang) => {
-        expect(Language.template('T1.t1', lang), 'Overwrites base templates with new definitions.').to.equal('t1-extended-content')
-        expect(Language.template('T1.t2', lang), 'Keeps not overwritten templates.').to.equal('t2-content')
+        expect(Language.template('T1.t1', lang)(), 'Overwrites base templates with new definitions.').to.equal('t1-extended-content')
+        expect(Language.template('T1.t2', lang)(), 'Keeps not overwritten templates.').to.equal('t2-content')
       }))
 
     it('Has access to all atomics in the languages', () =>
@@ -74,8 +74,8 @@ describe('Languages', () => {
         expect(Language.hasTemplate('T1.t1', lang)).to.be.true
         expect(Language.hasTemplate('dep.tdep', lang)).to.be.false
         expect(() => Language.templateBy('dep.tdep', lang)).to.throw(Error)
-        expect(Language.hasTemplate('dep.tdep', lang, {activate: true})).to.be.true
-        expect(Language.template('dep.tdep', lang, {activate: true})).to.be.ok
+        expect(Language.hasTemplate('dep.tdep', lang, {options: {activate: true}})).to.be.true
+        expect(Language.template('dep.tdep', lang, {options: {activate: true}})).to.be.ok
       }))
   })
 })

@@ -2,7 +2,7 @@
 
 import * as cliExt from 'cli-ext'
 import {generateExecutable} from './api'
-import {loadLanguages} from './language.js'
+import {packLanguages} from './language.js'
 import {normalize} from 'path'
 import yargs from 'yargs'
 
@@ -18,19 +18,16 @@ const command = (fn) => {
 var argv = yargs
   .alias('l', 'language')
   .describe('l', 'Specify languages that should be used to create the code.')
+  .demand('l')
   .array('l')
   .command('pack-language', 'Pack language information into a JSON document and print it.', { demand: 1 },
-    command((yargs) => loadLanguages(yargs._.slice(1).map(normalize)).then((l) => console.log(JSON.stringify(l)))))
+    command((yargs) => packLanguages(yargs._.slice(1).map(normalize)).then((l) => console.log(JSON.stringify(l)))))
+  .help()
   .argv
 
 if (!global.wasCommand) {
-  var langPromise
-  if (argv.l) {
-    langPromise = loadLanguages(argv.l.map(normalize))
-  } else {
-    langPromise = loadLanguages([normalize('languages/javascript')])
-  }
-  langPromise.then((lang) =>
+  packLanguages(argv.l.map(normalize))
+  .then((lang) =>
     cliExt.input(argv._[0])
     .then((graphStr) => {
       var graph
@@ -39,11 +36,7 @@ if (!global.wasCommand) {
       } catch (err) {
         console.error('[codegen] Cannot parse input JSON.')
       }
-      if (argv.l) {
-        return generateExecutable(graph, lang)
-      } else {
-        return generateExecutable(graph, lang)
-      }
+      return generateExecutable(graph, lang)
     }))
   .then((res) => console.log(res))
   .catch((err) => console.error(err.stack || err))

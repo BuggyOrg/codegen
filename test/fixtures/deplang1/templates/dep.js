@@ -1,5 +1,5 @@
 module.exports = {
   dep: {
-    tdep: 'dependent template'
+    tdep: () => 'dependent template'
   }
 }

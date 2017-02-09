@@ -3,8 +3,8 @@ import * as Graph from '@buggyorg/graphtools'
 import {sanitize, variable, componentName} from './utils'
 import flatten from 'lodash/fp/flatten'
 import * as Language from './language'
-import * as vm from 'vm'
 import * as Types from './types'
+import BabelVM from './babel-vm-engine'
 
 const Node = Graph.Node
 
@@ -20,19 +20,32 @@ function structs (graph) {
   return Graph.components(graph).filter(Types.isType)
 }
 
+function createContext (graph, options, llang) {
+  /* eslint-disable object-property-newline */
+  return Object.assign({}, {Node, sanitize, portArgument: (p) => p.port,
+    Graph, flatten, atomics, compounds, structs, Types, variable, componentName, graph,
+    console, JSON,
+    t: (name) => (data) => Language.template(name, llang.lang, {options, data})(data)})
+  /* eslint-enable object-property-newline */
+}
+
 /**
  * @function
  * @name generateExecutable
  * @description
  * Creates the source code for an executable using the given graph in the specified language.
  * @param {PortGraph} graph The graph that contains the program.
- * @param {Language} language A (loaded) language definition see [Language]{@link module:Language}.
+ * @param {Language} language A (packaged) language definition see [Language]{@link module:Language}.
  * @param {object} options An optional flag with specific translation properties.
- * @return {string} The source code of the program.
+ * @return {Promise<string>} The source code of the program.
  */
 export function generateExecutable (graph, language, options) {
-  return addCode(graph, language, options)
-  .then(generateTarget(language, 'main', options))
+  // a bit cheesy...
+  var langObj = {lang: null} // we need this inside the context.. but get it afterwards..
+  return Language.loadLanguages(language, BabelVM(createContext(graph, options, langObj)))
+  .then((lang) => { langObj.lang = lang; return lang })
+  .then((lang) => addCode(graph, lang, options)
+    .then(generateTarget(lang, 'main', options)))
 }
 
 const generateTarget = (language, target, options) => (graph) => {
@@ -46,17 +59,20 @@ const generateTarget = (language, target, options) => (graph) => {
   // it seems unnecessary that edgeName has access to the other functions, but we do not want to specify any
   // dependencies in the general case. It is easier to allow every template to call every other template (and even itself).
 
+  /*
   const sandbox = {Node, sanitize, portArgument: (p) => p.port,
     Graph, flatten, atomics, compounds, structs, Types, variable, componentName, graph,
-    /* debug helpers */ console, JSON}
+    console, JSON}
+
   const context = vm.createContext(sandbox)
 
   for (const templateName in language.templates) {
     const template = language.templates[templateName]
     vm.runInContext(template.code, context, {filename: template.path})
   }
+  */
 
-  return vm.runInContext(`${target}`, context)(graph)
+  return Language.template(target, language, options)(graph)
   //
   // We define templImports and use it inside the mapping below. The first argument of merge are the "always" available
   // functions (independent of the target language). Then we map over all templates of a given language and

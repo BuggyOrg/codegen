@@ -49,7 +49,7 @@ function gatherTemplates (path) {
     gatherNamedFiles(templatesPath))
 }
 
-function gatherSettings (path, engine) {
+function gatherSettings (path) {
   const settingsPath = join(path, 'settings.json')
   if (!fs.existsSync(settingsPath)) {
     return Promise.reject('Invalid language: Language has no `settings.json` [at ' + settingsPath + '].')
@@ -57,11 +57,11 @@ function gatherSettings (path, engine) {
   return Promise.resolve(JSON.parse(fs.readFileSync(settingsPath, 'utf8')))
 }
 
-function packLanguage (path, engine) {
+function packLanguage (path) {
   return promiseAll({
-    settings: gatherSettings(path, engine),
-    atomics: gatherAtomics(path, engine),
-    templates: gatherTemplates(path, engine)
+    settings: gatherSettings(path),
+    atomics: gatherAtomics(path),
+    templates: gatherTemplates(path)
   })
   .then((res) =>
     // each language is an array of language definitions / extensions. If we load exactly one language
@@ -77,11 +77,11 @@ function packLanguage (path, engine) {
  * languages are specified matters, i.e. languages that are defined earlier in the paths array
  * are the first to use when looking for an atomic or a template.
  */
-export function packLanguages (paths, engine) {
-  if (!Array.isArray(paths)) return packLanguages([paths], engine)
+export function packLanguages (paths) {
+  if (!Array.isArray(paths)) return packLanguages([paths])
   return Promise.all(paths.map((p) => {
     if (typeof (p) === 'string' && isLanguageDirectory(p)) { // assume path to language folder
-      return packLanguage(p, engine)
+      return packLanguage(p)
     } else if (typeof (p) === 'string') { // assume it is a packed language (i.e. a json file)
       try {
         return JSON.parse(fs.readFileSync(p, 'utf8'))
@@ -106,17 +106,25 @@ function parseActivation (settings, engine) {
   : engine.activation('true')
 }
 
+function createExport (source, engine) {
+  if (source.code) {
+    return engine.exports(source.code, source.path)
+  } else {
+    return engine.exports(source)
+  }
+}
+
 /**
  * Go through all templates and atomics and create the corresponding callable
  * functions from the package.
  */
 function createCallables (language, engine) {
   return {
-    activation: engine.exports(parseActivation(language, engine)),
+    activation: createExport(parseActivation(language, engine), engine),
     atomics: mergeArrayIntoObject(
-      Object.keys(language.atomics).map((k) => engine.exports(language.atomics[k]))),
+      Object.keys(language.atomics).map((k) => createExport(language.atomics[k], engine))),
     templates: mergeArrayIntoObject(
-      Object.keys(language.templates).map((k) => engine.exports(language.templates[k])))
+      Object.keys(language.templates).map((k) => createExport(language.templates[k], engine)))
   }
 }
 
@@ -153,6 +161,10 @@ export function loadLanguages (langs, engine) {
     languages: langs,
     callables: langs.map((l) => createCallables(l, engine))
   }))
+}
+
+export function isValid (language) {
+  return typeof (language) === 'object' && !!language.name && !!language.callables
 }
 
 export function name (language) {
