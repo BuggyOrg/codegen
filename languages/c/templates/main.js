@@ -1,17 +1,10 @@
 module.exports = {
-  includes: `
-#include <memory>
+  prefix: (graph) => `
 #include <cstdlib>
-#include <string.h>
 `,
 
-  entry: `
+  mainEntry: (graph) => `
 int main (int argc, char** argv) {
-  // create the IO context
-  std::shared_ptr<IO> io(makeIO());
-  std::shared_ptr<IO> outIo;
-
-  P_main(io, outIo);
   return 0;
 }
 `
