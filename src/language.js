@@ -189,7 +189,7 @@ export function implementation (node, language, data) {
   }
   try {
     // select extension that defines the atomic and search inside this language
-    return atomicById(node.componentId, find(hasAtomic(node.componentId), activeLanguage(language, data)))(data)
+    return atomicById(node.componentId, find(hasAtomic(node.componentId), activeLanguage(language, data)))
   } catch (exc) {
     throw new Error('Error while compiling the code for the atomic: "' + node.componentId + '" (' + exc.message + ')')
   }

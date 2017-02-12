@@ -5,6 +5,7 @@ import flatten from 'lodash/fp/flatten'
 import * as Language from './language'
 import * as Types from './types'
 import BabelVM from './babel-vm-engine'
+import hash from 'object-hash'
 
 const Node = Graph.Node
 
@@ -23,8 +24,8 @@ function structs (graph) {
 function createContext (graph, options, llang) {
   /* eslint-disable object-property-newline */
   return Object.assign({}, {Node, sanitize, portArgument: (p) => p.port,
-    Graph, flatten, atomics, compounds, structs, Types, variable, componentName, graph,
-    console, JSON,
+    Graph, flatten, atomics, compounds, structs, Types, variable, hash, graph,
+    console, JSON, componentName,
     // llang.lang is updated when the language is loaded to enable template on the just loaded language.
     // while creating the context, llang will be null!
     t: (name) => (data) => Language.template(name, llang.lang, {options, data})(data)})

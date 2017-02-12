@@ -22,128 +22,17 @@
       "componentId": "print",
       "version": "1.0.0",
       "atomic": true,
-      "id": "#ciyq0jv5y00026plumt4kezpb",
+      "id": "#ciz10wkzj0002s4g21ae04niq",
       "path": [
-        "#ciyq0jv5y00026plumt4kezpb"
-      ],
-      "edges": []
-    },
-    {
-      "ports": [
-        {
-          "port": "in",
-          "kind": "input",
-          "type": "SPair"
-        },
-        {
-          "port": "out",
-          "kind": "output",
-          "type": "String"
-        }
-      ],
-      "settings": {},
-      "componentId": "de-SPair-2",
-      "version": "0.0.0",
-      "atomic": true,
-      "type": true,
-      "metaInformation": {
-        "isDestructor": true,
-        "parameter": "2",
-        "datastructure": {
-          "name": "SPair",
-          "structure": {
-            "type": "struct",
-            "contents": [
-              {
-                "kind": "basic",
-                "type": "String",
-                "name": "arg0"
-              },
-              {
-                "kind": "basic",
-                "type": "String",
-                "name": "arg1"
-              },
-              {
-                "kind": "basic",
-                "type": "String",
-                "name": "arg2"
-              }
-            ]
-          }
-        }
-      },
-      "id": "#ciyq0jv6200036pluosazron3",
-      "path": [
-        "#ciyq0jv6200036pluosazron3"
-      ],
-      "edges": []
-    },
-    {
-      "ports": [
-        {
-          "port": "0",
-          "kind": "input",
-          "type": "String"
-        },
-        {
-          "port": "1",
-          "kind": "input",
-          "type": "String"
-        },
-        {
-          "port": "2",
-          "kind": "input",
-          "type": "String"
-        },
-        {
-          "port": "output",
-          "kind": "output",
-          "type": "SPair"
-        }
-      ],
-      "settings": {},
-      "componentId": "SPair",
-      "version": "0.0.0",
-      "atomic": true,
-      "type": true,
-      "metaInformation": {
-        "isConstructor": true,
-        "datastructure": {
-          "name": "SPair",
-          "structure": {
-            "type": "struct",
-            "contents": [
-              {
-                "kind": "basic",
-                "type": "String",
-                "name": "arg0"
-              },
-              {
-                "kind": "basic",
-                "type": "String",
-                "name": "arg1"
-              },
-              {
-                "kind": "basic",
-                "type": "String",
-                "name": "arg2"
-              }
-            ]
-          }
-        }
-      },
-      "id": "#ciyq0jv6200046plumzolklul",
-      "path": [
-        "#ciyq0jv6200046plumzolklul"
+        "#ciz10wkzj0002s4g21ae04niq"
       ],
       "edges": []
     },
     {
       "metaInformation": {
         "parameters": {
-          "type": "string",
-          "value": "a"
+          "type": "STRING",
+          "value": "ABC"
         }
       },
       "settings": {},
@@ -158,57 +47,9 @@
       "version": "1.0.0",
       "atomic": true,
       "edges": [],
-      "id": "#ciyq0jv6300056pluxrop9idh",
+      "id": "#ciz10wkzo0003s4g2qz0tuqmz",
       "path": [
-        "#ciyq0jv6300056pluxrop9idh"
-      ]
-    },
-    {
-      "metaInformation": {
-        "parameters": {
-          "type": "string",
-          "value": "b"
-        }
-      },
-      "settings": {},
-      "ports": [
-        {
-          "port": "const",
-          "kind": "output",
-          "type": "String"
-        }
-      ],
-      "componentId": "std/const",
-      "version": "1.0.0",
-      "atomic": true,
-      "edges": [],
-      "id": "#ciyq0jv6u00066plu3izfndu0",
-      "path": [
-        "#ciyq0jv6u00066plu3izfndu0"
-      ]
-    },
-    {
-      "metaInformation": {
-        "parameters": {
-          "type": "string",
-          "value": "c"
-        }
-      },
-      "settings": {},
-      "ports": [
-        {
-          "port": "const",
-          "kind": "output",
-          "type": "String"
-        }
-      ],
-      "componentId": "std/const",
-      "version": "1.0.0",
-      "atomic": true,
-      "edges": [],
-      "id": "#ciyq0jv7f00076pludr9zfkjo",
-      "path": [
-        "#ciyq0jv7f00076pludr9zfkjo"
+        "#ciz10wkzo0003s4g2qz0tuqmz"
       ]
     }
   ],
@@ -217,73 +58,13 @@
     {
       "from": {
         "type": "generic",
-        "node": "#ciyq0jv6300056pluxrop9idh",
+        "node": "#ciz10wkzo0003s4g2qz0tuqmz",
         "port": "const",
         "kind": "output"
       },
       "to": {
         "type": "String",
-        "node": "#ciyq0jv6200046plumzolklul",
-        "port": "0",
-        "kind": "input"
-      },
-      "layer": "dataflow"
-    },
-    {
-      "from": {
-        "type": "generic",
-        "node": "#ciyq0jv6u00066plu3izfndu0",
-        "port": "const",
-        "kind": "output"
-      },
-      "to": {
-        "type": "String",
-        "node": "#ciyq0jv6200046plumzolklul",
-        "port": "1",
-        "kind": "input"
-      },
-      "layer": "dataflow"
-    },
-    {
-      "from": {
-        "type": "generic",
-        "node": "#ciyq0jv7f00076pludr9zfkjo",
-        "port": "const",
-        "kind": "output"
-      },
-      "to": {
-        "type": "String",
-        "node": "#ciyq0jv6200046plumzolklul",
-        "port": "2",
-        "kind": "input"
-      },
-      "layer": "dataflow"
-    },
-    {
-      "from": {
-        "type": "SPair",
-        "node": "#ciyq0jv6200046plumzolklul",
-        "port": "output",
-        "kind": "output"
-      },
-      "to": {
-        "type": "SPair",
-        "node": "#ciyq0jv6200036pluosazron3",
-        "port": "in",
-        "kind": "input"
-      },
-      "layer": "dataflow"
-    },
-    {
-      "from": {
-        "type": "String",
-        "node": "#ciyq0jv6200036pluosazron3",
-        "port": "out",
-        "kind": "output"
-      },
-      "to": {
-        "type": "String",
-        "node": "#ciyq0jv5y00026plumt4kezpb",
+        "node": "#ciz10wkzj0002s4g21ae04niq",
         "port": "text",
         "kind": "input"
       },
@@ -292,12 +73,12 @@
     {
       "from": {
         "type": "generic",
-        "node": "#ciyq0jv5w00016plu397a4hgp",
+        "node": "#ciz10wkze0001s4g2u6ujxye3",
         "port": "IO"
       },
       "to": {
         "type": "IO",
-        "node": "#ciyq0jv5y00026plumt4kezpb",
+        "node": "#ciz10wkzj0002s4g21ae04niq",
         "port": "IO_in",
         "kind": "input"
       },
@@ -307,13 +88,13 @@
     {
       "from": {
         "type": "IO",
-        "node": "#ciyq0jv5y00026plumt4kezpb",
+        "node": "#ciz10wkzj0002s4g21ae04niq",
         "port": "IO_out",
         "kind": "output"
       },
       "to": {
         "type": "generic",
-        "node": "#ciyq0jv5w00016plu397a4hgp",
+        "node": "#ciz10wkze0001s4g2u6ujxye3",
         "port": "value"
       },
       "layer": "dataflow",
@@ -321,228 +102,6 @@
     }
   ],
   "components": [
-    {
-      "componentId": "StringPair",
-      "metaInformation": {
-        "type": {
-          "type": {
-            "type": "StringPair"
-          },
-          "definition": {
-            "name": "SPair",
-            "data": [
-              {
-                "type": "String"
-              },
-              {
-                "type": "String"
-              },
-              {
-                "type": "String"
-              }
-            ]
-          }
-        }
-      },
-      "version": "0.0.0",
-      "ports": [
-        {
-          "port": "constructor",
-          "kind": "output",
-          "type": "StringPair"
-        }
-      ],
-      "type": true
-    },
-    {
-      "componentId": "SPair",
-      "ports": [
-        {
-          "port": "0",
-          "kind": "input",
-          "type": "String"
-        },
-        {
-          "port": "1",
-          "kind": "input",
-          "type": "String"
-        },
-        {
-          "port": "2",
-          "kind": "input",
-          "type": "String"
-        },
-        {
-          "port": "output",
-          "kind": "output",
-          "type": "SPair"
-        }
-      ],
-      "version": "0.0.0",
-      "atomic": true,
-      "type": true,
-      "metaInformation": {
-        "isConstructor": true,
-        "datastructure": {
-          "name": "SPair",
-          "structure": {
-            "type": "struct",
-            "contents": [
-              {
-                "kind": "basic",
-                "type": "String",
-                "name": "arg0"
-              },
-              {
-                "kind": "basic",
-                "type": "String",
-                "name": "arg1"
-              },
-              {
-                "kind": "basic",
-                "type": "String",
-                "name": "arg2"
-              }
-            ]
-          }
-        }
-      }
-    },
-    {
-      "componentId": "de-SPair-0",
-      "ports": [
-        {
-          "port": "in",
-          "kind": "input",
-          "type": "SPair"
-        },
-        {
-          "port": "out",
-          "kind": "output",
-          "type": "String"
-        }
-      ],
-      "version": "0.0.0",
-      "atomic": true,
-      "type": true,
-      "metaInformation": {
-        "isDestructor": true,
-        "parameter": "0",
-        "datastructure": {
-          "name": "SPair",
-          "structure": {
-            "type": "struct",
-            "contents": [
-              {
-                "kind": "basic",
-                "type": "String",
-                "name": "arg0"
-              },
-              {
-                "kind": "basic",
-                "type": "String",
-                "name": "arg1"
-              },
-              {
-                "kind": "basic",
-                "type": "String",
-                "name": "arg2"
-              }
-            ]
-          }
-        }
-      }
-    },
-    {
-      "componentId": "de-SPair-1",
-      "ports": [
-        {
-          "port": "in",
-          "kind": "input",
-          "type": "SPair"
-        },
-        {
-          "port": "out",
-          "kind": "output",
-          "type": "String"
-        }
-      ],
-      "version": "0.0.0",
-      "atomic": true,
-      "type": true,
-      "metaInformation": {
-        "isDestructor": true,
-        "parameter": "1",
-        "datastructure": {
-          "name": "SPair",
-          "structure": {
-            "type": "struct",
-            "contents": [
-              {
-                "kind": "basic",
-                "type": "String",
-                "name": "arg0"
-              },
-              {
-                "kind": "basic",
-                "type": "String",
-                "name": "arg1"
-              },
-              {
-                "kind": "basic",
-                "type": "String",
-                "name": "arg2"
-              }
-            ]
-          }
-        }
-      }
-    },
-    {
-      "componentId": "de-SPair-2",
-      "ports": [
-        {
-          "port": "in",
-          "kind": "input",
-          "type": "SPair"
-        },
-        {
-          "port": "out",
-          "kind": "output",
-          "type": "String"
-        }
-      ],
-      "version": "0.0.0",
-      "atomic": true,
-      "type": true,
-      "metaInformation": {
-        "isDestructor": true,
-        "parameter": "2",
-        "datastructure": {
-          "name": "SPair",
-          "structure": {
-            "type": "struct",
-            "contents": [
-              {
-                "kind": "basic",
-                "type": "String",
-                "name": "arg0"
-              },
-              {
-                "kind": "basic",
-                "type": "String",
-                "name": "arg1"
-              },
-              {
-                "kind": "basic",
-                "type": "String",
-                "name": "arg2"
-              }
-            ]
-          }
-        }
-      }
-    },
     {
       "componentId": "print",
       "version": "1.0.0",
@@ -581,18 +140,20 @@
   "path": [],
   "ports": [
     {
+      "node": "#ciz10wkze0001s4g2u6ujxye3",
       "port": "IO",
       "kind": "input",
       "type": "IO"
     },
     {
+      "node": "#ciz10wkze0001s4g2u6ujxye3",
       "port": "value",
       "kind": "output",
       "type": "IO"
     }
   ],
   "atomic": false,
-  "id": "#ciyq0jv5w00016plu397a4hgp",
+  "id": "#ciz10wkze0001s4g2u6ujxye3",
   "version": "0.0.0",
   "componentId": "main"
 }
