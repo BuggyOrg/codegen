@@ -1,8 +1,12 @@
 module.exports = {
   Process: {
-    body: (node) =>`${t('Process.prefix')(node)}
-  ${Node.get('code', node)(node)}
-${t('Process.postfix')(node)}`,
+    body: (node) => {
+      const atomicFn = Node.get('code', node)
+      if (typeof (atomicFn) !== 'function') throw new Error('Missing code for atomic: "' + node.componentId + '"')
+      return `${t('Process.prefix')(node)}
+  ${atomicFn(node)}
+${t('Process.postfix')(node)}`
+    },
 
     prefix: (node) =>
       Node.inputPorts(node).map((a) => '  std::shared_ptr<' + Types.typeName(a.type) + '> v_' + a.port + ' = input_' + a.port + ';').join('\n') +
