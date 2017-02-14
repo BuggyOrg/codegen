@@ -43,5 +43,13 @@ describe('API methods', () => {
       return expect(packLanguages('./test/fixtures/atomics')
       .then((eLang) => api.generateExecutable(graph, eLang, {}))).to.eventually.equal('<atomic-code>')
     })
+
+    it('Can resolve base templates', () =>
+      expect(packLanguages(['./test/fixtures/deplang3', './test/fixtures/lang3'])
+      .then((eLang) => api.generateExecutable(graphAPI.empty(), eLang, {}))).to.eventually.equal('base:main'))
+
+    it.only('Can resolve base templates multiple times', () =>
+      expect(packLanguages(['./test/fixtures/deplang4', './test/fixtures/deplang3', './test/fixtures/lang3'])
+      .then((eLang) => api.generateExecutable(graphAPI.empty(), eLang, {}))).to.eventually.equal('base4:base:main'))
   })
 })

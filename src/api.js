@@ -28,7 +28,7 @@ function createContext (graph, options, llang) {
     console, JSON, componentName,
     // llang.lang is updated when the language is loaded to enable template on the just loaded language.
     // while creating the context, llang will be null!
-    t: (name) => (data) => Language.template(name, llang.lang, {options, data})(data)})
+    t: (name) => (data) => Language.template(name, llang.lang, {options, data, callStack: ((options || {}).callStack || [])})(data)})
   /* eslint-enable object-property-newline */
 }
 

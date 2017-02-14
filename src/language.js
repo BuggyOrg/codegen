@@ -124,7 +124,8 @@ function createCallables (language, engine) {
     atomics: mergeArrayIntoObject(
       Object.keys(language.atomics).map((k) => createExport(language.atomics[k], engine))),
     templates: mergeArrayIntoObject(
-      Object.keys(language.templates).map((k) => createExport(language.templates[k], engine)))
+      Object.keys(language.templates).map((k) => createExport(language.templates[k], engine))),
+    name: language.name
   }
 }
 
@@ -199,6 +200,21 @@ function templateInLang (tmpl) {
   return (lang) => has(tmpl, lang.templates)
 }
 
+function addBase (tmpl, context, language, languages) {
+  if (!context.callStack || tmpl !== 'base') {
+    context.callStack = []
+    context.callStack.push({template: tmpl, language: language.name})
+  } else {
+    context.callStack.push({template: context.callStack[0].template, language: language.name})
+  }
+  language.templates.base = (data) => template(context.callStack[0].template, languages, context)(data)
+  return language
+}
+
+function partOfCallStack (tmpl, lang, callStack) {
+  return !!(callStack || []).find((elem) => elem.template === tmpl && lang.name === elem.language)
+}
+
 /**
  * Returns the template string for the given template.
  * @example <caption>settings.json</caption>
@@ -231,11 +247,13 @@ function templateInLang (tmpl) {
  * @returns {String} The contents of the template in the first fitting language/language-extension defined.
  * @throws {Error} If no template with the given name could be found.
  */
-export function template (tmpl, language, context) {
+export function template (tmpl, language, context = {}) {
   if (!hasTemplate(tmpl, activeLanguage(language, context), context)) {
     throw new Error('Cannot get template "' + tmpl + '" in language ' + name(language))
   }
-  return get(tmpl, find(templateInLang(tmpl), activeLanguage(language, context)).templates)
+  return get(tmpl, addBase(tmpl, context,
+    find((lang) => templateInLang(tmpl)(lang) && !partOfCallStack(tmpl, lang, context.callStack),
+    activeLanguage(language, context)), language).templates)
 }
 
 /**
