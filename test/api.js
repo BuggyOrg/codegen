@@ -48,7 +48,7 @@ describe('API methods', () => {
       expect(packLanguages(['./test/fixtures/deplang3', './test/fixtures/lang3'])
       .then((eLang) => api.generateExecutable(graphAPI.empty(), eLang, {}))).to.eventually.equal('base:main'))
 
-    it.only('Can resolve base templates multiple times', () =>
+    it('Can resolve base templates multiple times', () =>
       expect(packLanguages(['./test/fixtures/deplang4', './test/fixtures/deplang3', './test/fixtures/lang3'])
       .then((eLang) => api.generateExecutable(graphAPI.empty(), eLang, {}))).to.eventually.equal('base4:base:main'))
   })

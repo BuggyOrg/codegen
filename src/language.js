@@ -201,7 +201,7 @@ function templateInLang (tmpl) {
 }
 
 function addBase (tmpl, context, language, languages) {
-  if (!context.callStack || tmpl !== 'base') {
+  if (!context.callStack || (tmpl !== 'base' && tmpl !== context.callStack[0].template)) {
     context.callStack = []
     context.callStack.push({template: tmpl, language: language.name})
   } else {
