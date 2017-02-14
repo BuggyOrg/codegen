@@ -201,13 +201,16 @@ function templateInLang (tmpl) {
 }
 
 function addBase (tmpl, context, language, languages) {
-  if (!context.callStack || (tmpl !== 'base' && tmpl !== context.callStack[0].template)) {
-    context.callStack = []
-    context.callStack.push({template: tmpl, language: language.name})
+  var newContext = Object.assign({}, context)
+  if (!context.callStack || (tmpl !== 'base' && (context.callStack.length === 0 || tmpl !== context.callStack[0].template))) {
+    newContext.callStack = []
+    newContext.callStack.push({template: tmpl, language: language.name})
+  } else if (context.callStack.length === 0) {
+    return language
   } else {
-    context.callStack.push({template: context.callStack[0].template, language: language.name})
+    newContext.callStack.push({template: context.callStack[0].template, language: language.name})
   }
-  language.templates.base = (data) => template(context.callStack[0].template, languages, context)(data)
+  language.templates.base = (data) => template(newContext.callStack[0].template, languages, newContext)(data)
   return language
 }
 
