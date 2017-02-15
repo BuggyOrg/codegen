@@ -6,6 +6,6 @@ module.exports = {
       case 'string':
         return `${variable('const')} = std::shared_ptr<String>(new String("${node.metaInformation.parameters.value}"));`
     }
-    return `${assignment}`
+    throw new Error('Constant Type not defined: ')
   }
 }

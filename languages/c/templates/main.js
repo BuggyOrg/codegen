@@ -5,15 +5,7 @@ module.exports = {
 #include <string>
 #include <memory>
 
-struct String {
-  String(std::string v) : value(v) {}
-  std::string value;
-};
-struct IO {
-  void print_string(const String &str) {
-    std::cout << str.value;
-  }
-};
+${['String', 'IO'].map((name) => t('Types.definition')(name)).join('\n')}
 `,
 
   mainEntry: (graph) => `

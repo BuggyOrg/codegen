@@ -20,7 +20,7 @@ import promiseAll from 'promise-all'
 
 function mergeArrayIntoObject (array) {
   // fails if the array is empty and there is no first argument
-  return Object.assign({}, ...array)
+  return array.reduce((obj, cur) => merge(obj, cur), {})
 }
 
 function pathToName (basePath) {
