@@ -13,9 +13,14 @@ module.exports = {
       if (data.arguments) {
         return data.arguments.map((a) => a.type + ' ' + a.port).join(', ')
       } else {
-        return data.inputs.map((p) => 'std::shared_ptr<' + p.type + '> input_' + p.port)
-          .concat(data.outputs.map((p) => 'std::shared_ptr<' + p.type + '>& output_' + p.port)).join(', ')
+        return data.inputs.map(t('Function.Argument.input'))
+          .concat(data.outputs.map(t('Function.Argument.output'))).join(', ')
       }
+    },
+
+    Argument: {
+      input: (port) => `std::shared_ptr<${ port.type }> input_${ port.port }`,
+      output: (port) => `std::shared_ptr<${ port.type }>& output_${ port.port }`,
     }
   }
 }
