@@ -1,5 +1,6 @@
 module.exports = {
   prefix: (graph) => {
+    const structs = Graph.components(graph).filter(Types.isType).filter(Types.isConstructor)
     return `${t('base')()}
 
 template <typename T>
@@ -10,14 +11,15 @@ public:
   debug_shared_ptr(const std::shared_ptr<T>& other);
 };
 
-template <>
-debug_shared_ptr<String>::debug_shared_ptr(const std::shared_ptr<String>& other) : std::shared_ptr<String>(other) {
-  std::cout << "Copy: " << ${t('Types.toStringName')('String')}(*other) << std::endl;
-}
 
+${['String', 'IO'].map(t('defineSpecialization')).join('\n')}
+${structs.map(Types.structureData).map((s) => s.name).map(t('defineSpecialization')).join('\n')}
+`},
+
+    defineSpecialization: (typeName) => `
 template <>
-debug_shared_ptr<IO>::debug_shared_ptr(const std::shared_ptr<IO>& other) : std::shared_ptr<IO>(other) {
-}
-`
-  }
+debug_shared_ptr<${typeName}>::debug_shared_ptr(const std::shared_ptr<${typeName}>& other) : std::shared_ptr<${typeName}>(other) {
+  std::cout << "Copy: " << ${t('Types.toStringName')(typeName)}(*other) << std::endl;
+}`
+
 }

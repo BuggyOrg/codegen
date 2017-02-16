@@ -1,12 +1,17 @@
 module.exports = {
-  prefix: (graph) => `
+  prefix: () => {
+    const structs = Graph.components(graph).filter(Types.isType)
+    return `
 #include <cstdlib>
 #include <iostream>
 #include <string>
 #include <memory>
 
 ${['String', 'IO'].map((name) => t('Types.definition')(name)).join('\n')}
-`,
+
+// datastructures...
+${structs.map(t('Datastructures.definition')).join('\n')}
+` },
 
   mainEntry: (graph) => `
 int main (int argc, char** argv) {
