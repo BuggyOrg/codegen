@@ -1,6 +1,6 @@
 module.exports = {
   dep: {
     tdep: () => 'dependent template',
-    activation: (context) => context.options.activate === true
+    activation: (context) => (context && context.options && context.options.activate)
   }
 }

@@ -302,10 +302,6 @@ export function hasTemplate (tmpl, language, context) {
 function activeLanguage (language, context) {
   if (!language.callables) return language // already selected active language
   return language.callables.filter((lang) => {
-    try {
-      return lang.activation(context)
-    } catch (err) {
-      return false
-    }
+    return lang.activation(context)
   })
 }
