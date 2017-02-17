@@ -9,7 +9,7 @@ chai.use(chaiAsPromised)
 const expect = chai.expect
 
 const evalEngine = {
-  activation: (code) => 'module.exports = ((context) => ' + code + ')',
+  activation: (code) => 'module.exports = (' + code + ')',
   exports: (code, path) => eval('((module) => { ' + code + ' \n ;return module})')({}).exports
 }
 

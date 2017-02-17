@@ -100,10 +100,14 @@ export function packLanguages (paths) {
  * Each language may have an activation that is stored as an javascript expression inside the
  * `settings.json`. This must be parsed to run it at later stages.
  */
-function parseActivation (settings, engine) {
-  return (settings.activate)
-  ? engine.activation(settings.activate)
-  : engine.activation('true')
+function parseActivation (settings, templates, language, engine) {
+  if (settings.activate) {
+    if (!has(settings.activate, templates)) {
+      throw new Error('Activtation function is not defined in the language: ' + language.name)
+    }
+    return engine.activation(get(settings.activate, templates))
+  }
+  return engine.activation('() => true')
 }
 
 function createExport (source, engine) {
@@ -119,12 +123,13 @@ function createExport (source, engine) {
  * functions from the package.
  */
 function createCallables (language, engine) {
+  const langTemplates = mergeArrayIntoObject(
+    Object.keys(language.templates).map((k) => createExport(language.templates[k], engine)))
   return {
-    activation: createExport(parseActivation(language, engine), engine),
+    activation: createExport(parseActivation(language, langTemplates, language, engine), engine),
     atomics: mergeArrayIntoObject(
       Object.keys(language.atomics).map((k) => createExport(language.atomics[k], engine))),
-    templates: mergeArrayIntoObject(
-      Object.keys(language.templates).map((k) => createExport(language.templates[k], engine))),
+    templates: langTemplates,
     name: language.name
   }
 }

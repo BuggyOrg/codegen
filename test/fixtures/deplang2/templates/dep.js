@@ -1,3 +1,4 @@
 module.exports = {
-  dep: () => 'dependent'
+  dep: () => 'dependent',
+  activation: (context) => Node.isValid(context.data)
 }

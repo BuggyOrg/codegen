@@ -8,7 +8,7 @@ import * as vm from 'vm'
 import * as babel from 'babel-core'
 
 export default (context) => ({
-  activation: (code) => 'module.exports = ((context) => ' + code + ')',
+  activation: (code) => 'module.exports = (' + code + ')',
   exports: (code, path) =>
     vm.runInNewContext('((module) => { ' +
       babel.transform(code, {filename: path}).code + ' \n ;return module})',

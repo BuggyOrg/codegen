@@ -1,4 +1,4 @@
 {
   "name": "dependent language 1",
-  "activate": "context.options.activate === true"
+  "activate": "dep.activation"
 }
