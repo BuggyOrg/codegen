@@ -10,16 +10,18 @@ ${t('Compound.assignInputs')(node)}
 
     defineEdges: (node) => {
       const edges = Graph.edges(node)
-      return edges.map((e) => `  std::shared_ptr<${t('Edge.type')(e)}> ${t('Edge.name')(e)};`).join('\n')
+      return edges.map(t('Compound.defineEdge')).join('\n')
     },
+
+    defineEdge: (edge) => `  std::shared_ptr<${t('Edge.type')(edge)}> ${t('Edge.name')(edge)};`,
 
     assignInputs: (node) => {
       const inputPorts = Node.inputPorts(node).map((port) =>
         ({port, edges: Graph.outIncidents(port, graph)}))
-      return `${inputPorts.map((p) => p.edges.map((e) => '  ' + t('Edge.name')(e) + ' = input_' + p.port.port + ';')).join('\n')}`
+      return `${inputPorts.map((p) => p.edges.map((e) => '  ' + t('Compound.edgeAssign')(e)(`input_${p.port.port}`))).join('\n')}`
     },
 
-    postfix: (node) => ``,
+    edgeAssign: (edge) => (variable) => `${t('Edge.name')(edge)} = ${variable};`,
 
     body: (node) => {
       const topo = Graph.Algorithm.topologicalSort(node)
