@@ -49,4 +49,12 @@ ${t('Compound.postfix')(node)}`
     ${edgeAssignments}
   }`
     },
+
+    // Needed if a language wants to set the output of the compound at the end of the function (e.g.
+    // it needs to wait before the output becomes available)
+    postfix: (node) => Node.outputPorts(node).map((p) => t('Compound.assignOutput')(Graph.inIncident(p, graph))).join('\n'),
+
+    // Taking an edge here is a bit weird, but otherwise the activation in threading isn't working.
+    assignOutput: (edge) => ``,
+  },
 }
