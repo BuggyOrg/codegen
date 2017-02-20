@@ -30,12 +30,23 @@ ${topo.map(t('Compound.callProcess')).join('\n')}
 ${t('Compound.postfix')(node)}`
     },
 
-    callProcess: (node) => `  {
-${Node.outputPorts(node).map((p) => '    std::shared_ptr<' + t('Port.type')(Graph.port(p, graph)) + '> ' + t('Port.variable')(p)).join('\n')};
-    P_${componentName(node)}(${Node.inputPorts(node).map((p) => t('Edge.name')(Graph.inIncident(p, graph))).join(', ')}` +
-     `${(Node.outputPorts(node).length > 0 && Node.inputPorts(node).length > 0) ? ', ' : '' }` +
-     `${Node.outputPorts(node).map((p) => t('Port.variable')(p)).join(', ')});
-    ${Graph.outIncidents(node, graph).map((edge) => t('Edge.name')(edge) + ' = ' + t('Port.variable')(edge.from)).join('\n')};
+    callProcess: (node) => {
+      const outputVariables = Node.outputPorts(node).map((p) =>
+        `std::shared_ptr<${t('Port.type')(Graph.port(p, graph))}> ${t('Port.variable')(p)};`)
+
+      const inputArguments = Node.inputPorts(node).map((p) => t('Edge.name')(Graph.inIncident(p, graph)))
+      const outputArguments = Node.outputPorts(node).map(t('Port.variable'))
+      const functionArguments = inputArguments.concat(outputArguments).join(', ')
+
+      const functionCall = `P_${componentName(node)}(${functionArguments});`
+
+      const edgeAssignments = Graph.outIncidents(node, graph).map((edge) =>
+        `${t('Edge.name')(edge)} = ${t('Port.variable')(edge.from)};`)
+
+      return `  {
+    ${outputVariables}
+    ${functionCall}
+    ${edgeAssignments}
   }`
-  }
+    },
 }
