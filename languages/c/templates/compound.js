@@ -41,20 +41,15 @@ ${t('Compound.postfix')(node)}`
       const functionCall = `P_${componentName(node)}(${functionArguments});`
 
       const edgeAssignments = Graph.outIncidents(node, graph).map((edge) =>
-        `${t('Edge.name')(edge)} = ${t('Port.variable')(edge.from)};`)
+        `    ${t('Edge.name')(edge)} = ${t('Port.variable')(edge.from)};`).join('\n')
 
       return `  {
     ${outputVariables}
     ${functionCall}
-    ${edgeAssignments}
+${edgeAssignments}
   }`
     },
 
-    // Needed if a language wants to set the output of the compound at the end of the function (e.g.
-    // it needs to wait before the output becomes available)
-    postfix: (node) => Node.outputPorts(node).map((p) => t('Compound.assignOutput')(Graph.inIncident(p, graph))).join('\n'),
-
-    // Taking an edge here is a bit weird, but otherwise the activation in threading isn't working.
-    assignOutput: (edge) => ``,
+    postfix: (node) => ``,
   },
 }
