@@ -2,6 +2,7 @@
 import * as Graph from '@buggyorg/graphtools'
 import {sanitize, variable, componentName} from './utils'
 import flatten from 'lodash/fp/flatten'
+import uniqBy from 'lodash/fp/uniqBy'
 import * as Language from './language'
 import * as Types from './types'
 import BabelVM from './babel-vm-engine'
@@ -25,7 +26,7 @@ function createContext (graph, options, llang) {
   /* eslint-disable object-property-newline */
   return Object.assign({}, {Node, sanitize, portArgument: (p) => p.port,
     Graph, flatten, atomics, compounds, structs, Types, variable, hash, graph,
-    console, JSON, componentName,
+    console, JSON, componentName, uniqBy,
     // llang.lang is updated when the language is loaded to enable template on the just loaded language.
     // while creating the context, llang will be null!
     t: (name) => (data) => Language.template(name, llang.lang, {options, data, callStack: ((options || {}).callStack || [])})(data)})
