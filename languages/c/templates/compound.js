@@ -50,6 +50,9 @@ ${edgeAssignments}
   }`
     },
 
-    postfix: (node) => ``,
+    postfix: (node) => {
+      return Node.outputPorts(node).map((p) =>
+        `  output_${p.port} = ${t('Edge.name')(Graph.inIncident(p, graph))};`).join('\n')
+    },
   },
 }
