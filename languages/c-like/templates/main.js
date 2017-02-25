@@ -2,7 +2,7 @@ module.exports = {
   main: (graph) => {
 
     const atomics = Graph.atomics(graph)
-    const compounds = Graph.compounds(graph).concat(graph)
+    const compounds = Graph.compounds(graph)
 
     return `
 ${t('prefix')(graph)}
