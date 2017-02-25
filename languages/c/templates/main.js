@@ -7,7 +7,7 @@ module.exports = {
 #include <string>
 #include <memory>
 
-${['String', 'IO'].map((name) => t('Types.definition')(name)).join('\n')}
+${['String', 'IO', 'Number'].map((name) => t('Types.definition')(name)).join('\n')}
 
 // datastructures...
 ${structs.map(t('Datastructures.definition')).join('\n')}
