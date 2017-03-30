@@ -16,14 +16,15 @@
   "author": "Maximilian Klein",
   "license": "MIT",
   "dependencies": {
-    "@buggyorg/graphtools": "^0.4.0-pre.23",
+    "@buggyorg/graphtools": "^0.4.0-pre.27",
+    "babel-core": "^6.22.1",
     "cli-ext": "^1.1.0",
+    "debug": "^2.6.3",
     "glob": "^7.1.1",
     "map-keys-deep-lodash": "^0.2.0",
     "object-hash": "^1.1.5",
     "promise-all": "^1.0.0",
-    "yargs": "^6.6.0",
-    "babel-core": "^6.22.1"
+    "yargs": "^6.6.0"
   },
   "devDependencies": {
     "babel-cli": "^6.10.1",
