@@ -3,8 +3,14 @@ module.exports = {
     definition: (data) =>
       t('Function.begin')(data) + data.content + t('Function.end')(data),
 
+    declare: (data) =>
+      t('Function.declaration')(data) + ';',
+
+    declaration: (data) =>
+      `void ${data.prefix}${data.name} (${t('Function.arguments')(data)})`,
+
     begin: (data) =>
-      `void ${data.prefix}${data.name} (${t('Function.arguments')(data)}) {\n`,
+      `${t('Function.declaration')(data)} {\n`,
 
     end: (data) =>
       `\n}`,
@@ -19,8 +25,8 @@ module.exports = {
     },
 
     Argument: {
-      input: (port) => `std::shared_ptr<${ port.type }> input_${ port.port }`,
-      output: (port) => `std::shared_ptr<${ port.type }>& output_${ port.port }`,
+      input: (port) => `std::shared_ptr<${ t('Types.typeName')(port.type) }> input_${ port.port }`,
+      output: (port) => `std::shared_ptr<${ t('Types.typeName')(port.type) }>& output_${ port.port }`,
     }
   }
 }

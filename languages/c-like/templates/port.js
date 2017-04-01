@@ -1,7 +1,7 @@
 module.exports = {
   Port: {
     type: (port) =>
-      Types.typeName(port.type),
+      t('Types.typeName')(port.type),
 
     name: (node) => node.port,
 

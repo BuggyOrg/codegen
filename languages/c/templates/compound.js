@@ -1,5 +1,14 @@
 module.exports = {
   Compound: {
+    declare: (node) => {
+      return t('Function.declare')({
+        prefix: 'P_',
+        name: t('Component.name')(node),
+        inputs: Node.inputPorts(node),
+        outputs: Node.outputPorts(node)
+      }) + '\n'
+    },
+
     prefix: (node) => {
       return `
 ${t('Compound.defineEdges')(node)}
