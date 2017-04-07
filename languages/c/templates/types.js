@@ -8,8 +8,9 @@ module.exports = {
     },
 
     functionTypeName: (type) => {
-      const ret = type.data[1].data[0]
-      return 'std::function<void(std::shared_ptr<' + t('Types.typeName')(ret) + '>&)>'
+      const args = [...type.data[0].data, ...type.data[1].data]
+      const argPtrs = args.map((a) => 'std::shared_ptr<' + t('Types.typeName')(a) + '>&')
+      return 'std::function<void(' + argPtrs.join(', ') + ')>'
     }
   }
 }

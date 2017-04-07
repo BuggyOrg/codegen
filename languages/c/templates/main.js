@@ -7,6 +7,7 @@ module.exports = {
 #include <iostream>
 #include <string>
 #include <memory>
+#include <functional>
 
 ${['String', 'IO', 'Number'].map((name) => t('Types.definition')(name)).join('\n')}
 
