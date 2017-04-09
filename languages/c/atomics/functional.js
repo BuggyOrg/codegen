@@ -8,9 +8,13 @@ module.exports = {
 `,
 
   partial: (node) => {
-    const fnType = t('Types.typeName')(Node.outputPorts(node)[0].type);
+    const fnType = Node.outputPorts(node)[0].type
+    const fnTypeName = t('Types.typeName')(fnType)
+    const argNum = fnType.data[0].data.length + fnType.data[1].data.length
+    const nArr = Array.apply(null, {length: argNum}).map(Number.call, Number)
     return `
-  v_outFn = std::shared_ptr<${fnType}>(new ${fnType}(std::bind(*v_fn, v_value, std::placeholders::_1)));
+  v_outFn = std::shared_ptr<${fnTypeName}>(new ${fnTypeName}(std::bind(*v_fn, v_value,
+    ${nArr.map((idx) => 'std::placeholders::_' + (idx + 1)).join(', ')})));
 `
   }
 }
