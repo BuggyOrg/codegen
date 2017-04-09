@@ -23,7 +23,7 @@ int main (int argc, char** argv) {
   std::shared_ptr<IO> io(new IO());
   std::shared_ptr<IO> outIo;
 
-  P_main(io, outIo);
+  P_${t('Component.name')(graph)}(io, outIo);
   return 0;
 }
 `
