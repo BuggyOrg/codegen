@@ -8,7 +8,7 @@ module.exports = {
 ${t('prefix')(graph)}
 
 // atomics
-${uniqBy(componentName, atomics).map(t('Process.definition')).join('\n')}
+${uniqBy(t('Component.name'), atomics).map(t('Process.definition')).join('\n')}
 
 // compounds...
 ${compounds.map(t('Compound.definition')).join('\n')}

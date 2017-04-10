@@ -27,7 +27,7 @@ ${t('Compound.assignInputs')(node)}
     assignInputs: (node) => {
       const inputPorts = Node.inputPorts(node).map((port) =>
         ({port, edges: Graph.outIncidents(port, graph)}))
-      return `${inputPorts.map((p) => p.edges.map((e) => '  ' + t('Compound.edgeAssign')(e)(`input_${p.port.port}`))).join('\n')}`
+      return `${inputPorts.map((p) => p.edges.map((e) => '  ' + t('Compound.edgeAssign')(e)(`input_${sanitize(p.port.port)}`))).join('\n')}`
     },
 
     edgeAssign: (edge) => (variable) => `${t('Edge.name')(edge)} = ${variable};`,
@@ -47,7 +47,7 @@ ${t('Compound.postfix')(node)}`
       const outputArguments = Node.outputPorts(node).map(t('Port.variable'))
       const functionArguments = inputArguments.concat(outputArguments).join(', ')
 
-      const functionCall = `P_${componentName(node)}(${functionArguments});`
+      const functionCall = `P_${t('Component.name')(node)}(${functionArguments});`
 
       const edgeAssignments = Graph.outIncidents(node, graph).map((edge) =>
         `    ${t('Edge.name')(edge)} = ${t('Port.variable')(edge.from)};`).join('\n')
@@ -61,7 +61,7 @@ ${edgeAssignments}
 
     postfix: (node) => {
       return Node.outputPorts(node).map((p) =>
-        `  output_${p.port} = ${t('Edge.name')(Graph.inIncident(p, graph))};`).join('\n')
+        `  output_${sanitize(p.port)} = ${t('Edge.name')(Graph.inIncident(p, graph))};`).join('\n')
     },
   },
 }

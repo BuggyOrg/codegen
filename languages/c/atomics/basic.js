@@ -7,4 +7,12 @@ module.exports = {
   numToStr: (node) => `
   ${variable('outStr')} = std::shared_ptr<String>(new String(${t('Types.toStringName')('Number')}(*${variable('inNumber')})));
 `,
+
+  ifThunk: (node) => `
+  if (${variable('condition')}->value) {
+    (*${variable('inTrue')})(${variable('choice')});
+  } else {
+    (*${variable('inFalse')})(${variable('choice')});
+  }
+`
 }

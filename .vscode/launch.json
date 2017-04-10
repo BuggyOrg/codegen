@@ -22,11 +22,12 @@
     },
     {
       "name": "Debug",
-      "type": "node2",
+      "type": "node",
       "request": "launch",
+      "protocol": "inspector",
       "program": "${workspaceRoot}/.vscode/debug.js",
       "cwd": "${workspaceRoot}",
-      "args": ["print.json", "-l", "languages/c", "-l", "languages/c-like"],
+      "args": ["if.json", "-l", "languages/c-edge-debugger", "-l", "languages/c", "-l", "languages/c-like"],
       "env": {
         "NODE_ENV": "development"
       },

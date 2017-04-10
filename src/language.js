@@ -215,7 +215,9 @@ function addBase (tmpl, context, language, languages) {
   } else {
     newContext.callStack.push({template: context.callStack[0].template, language: language.name})
   }
-  language.templates.base = (data) => template(newContext.callStack[0].template, languages, newContext)(data)
+  language.templates.base = (data) =>
+    template(newContext.callStack[0].template, languages, newContext)(data)
+  languages.callables.forEach((c) => (c.templates && c.templates.base) ? (c.templates.base = language.templates.base) : null)
   return language
 }
 
@@ -256,12 +258,12 @@ function partOfCallStack (tmpl, lang, callStack) {
  * @throws {Error} If no template with the given name could be found.
  */
 export function template (tmpl, language, context = {}) {
-  if (!hasTemplate(tmpl, activeLanguage(language, context), context)) {
+  if (!hasTemplate(tmpl, activeLanguage(language, Object.assign({}, context, {template: tmpl})), context)) {
     throw new Error('Cannot get template "' + tmpl + '" in language ' + name(language))
   }
   return get(tmpl, addBase(tmpl, context,
     find((lang) => templateInLang(tmpl)(lang) && !partOfCallStack(tmpl, lang, context.callStack),
-    activeLanguage(language, context)), language).templates)
+    activeLanguage(language, Object.assign({}, context, {template: tmpl}))), language).templates)
 }
 
 /**
@@ -296,7 +298,7 @@ export function template (tmpl, language, context = {}) {
  * @returns {Boolean} True if the template is defined in any language/language-extension.
  */
 export function hasTemplate (tmpl, language, context) {
-  return some(templateInLang(tmpl), activeLanguage(language, context))
+  return some(templateInLang(tmpl), activeLanguage(language, Object.assign({}, context, {template: tmpl})))
 }
 
 function activeLanguage (language, context) {

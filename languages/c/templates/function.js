@@ -25,8 +25,8 @@ module.exports = {
     },
 
     Argument: {
-      input: (port) => `std::shared_ptr<${ t('Types.typeName')(port.type) }>& input_${ port.port }`,
-      output: (port) => `std::shared_ptr<${ t('Types.typeName')(port.type) }>& output_${ port.port }`,
+      input: (port) => `std::shared_ptr<${ t('Types.typeName')(port.type) }>& input_${ sanitize(port.port) }`,
+      output: (port) => `std::shared_ptr<${ t('Types.typeName')(port.type) }>& output_${ sanitize(port.port) }`,
     }
   }
 }
