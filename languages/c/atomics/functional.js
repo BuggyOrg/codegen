@@ -7,7 +7,7 @@ module.exports = {
   v_fn = std::shared_ptr<${t('Types.typeName')(Node.outputPorts(node)[0].type)}>(new ${t('Types.typeName')(Node.outputPorts(node)[0].type)}(P_${node.nodes[0].id.slice(1)}));
 `,
 
-  partial: (node) => {
+  'functional/partial': (node) => {
     const fnType = Node.outputPorts(node)[0].type
     const fnTypeName = t('Types.typeName')(fnType)
     const argNum = fnType.data[0].data.length + fnType.data[1].data.length
