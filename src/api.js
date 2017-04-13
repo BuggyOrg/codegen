@@ -47,15 +47,16 @@ export function generateExecutable (graph, language, options) {
   // a bit cheesy...
   var langObj = {lang: null} // we need this inside the context.. but get it afterwards..
   return Language.loadLanguages(language, BabelVM(createContext(graph, options, langObj)))
-  .then((lang) => { langObj.lang = lang; return lang }) // we set the lang here.. after createing the context
+  .then((lang) => { langObj.lang = lang; return lang }) // we set the lang here.. after creating the context
   .then((lang) => addCode(graph, lang, options)
     .then(Language.template('main', lang, options)))
 }
 
 function addCode (graph, language, options) {
   return Promise.resolve(atomics(graph)
-    .reduce((gr, n) =>
-      Graph.replaceNode(n, Node.set({code: codeFor(n, language, options)}, n), gr),
+    .reduce((gr, n) => {
+      return Graph.replaceNode(n, Node.set({code: codeFor(n, language, options)}, n), gr)
+    },
       graph))
 }
 

@@ -27,13 +27,17 @@
       "protocol": "inspector",
       "program": "${workspaceRoot}/.vscode/debug.js",
       "cwd": "${workspaceRoot}",
-      "args": ["if.json", "-l", "languages/c-edge-debugger", "-l", "languages/c", "-l", "languages/c-like"],
+      "args": ["fac.json", "-l", "languages/c", "-l", "languages/c-like"],
       "env": {
         "NODE_ENV": "development"
       },
       "console": "internalConsole",
       "sourceMaps": true,
-      "smartStep": false
+      "smartStep": false,
+      "skipFiles": [
+        "node_modules/lodash/**/*"
+      ]
+
     },
     {
       "name": "C++ Launch",

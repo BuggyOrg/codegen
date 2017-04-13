@@ -16,7 +16,7 @@
   "author": "Maximilian Klein",
   "license": "MIT",
   "dependencies": {
-    "@buggyorg/graphtools": "^0.4.0-pre.28",
+    "@buggyorg/graphtools": "^0.4.0-pre.32",
     "babel-core": "^6.22.1",
     "cli-ext": "^1.1.0",
     "debug": "^2.6.3",
