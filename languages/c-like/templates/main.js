@@ -1,7 +1,7 @@
 module.exports = {
   main: (graph) => {
 
-    const atomics = Graph.atomics(graph)
+    const atomics = Graph.atomics(graph).filter((n) => !Node.get('isRecursive', n))
     const compounds = Graph.compounds(graph)
 
     return `

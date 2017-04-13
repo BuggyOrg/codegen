@@ -13,6 +13,7 @@ module.exports = {
       return `
 ${t('Compound.defineEdges')(node)}
 
+// assign inputs
 ${t('Compound.assignInputs')(node)}
 `
     },
@@ -27,7 +28,7 @@ ${t('Compound.assignInputs')(node)}
     assignInputs: (node) => {
       const inputPorts = Node.inputPorts(node).map((port) =>
         ({port, edges: Graph.outIncidents(port, graph)}))
-      return `${inputPorts.map((p) => p.edges.map((e) => '  ' + t('Compound.edgeAssign')(e)(`input_${sanitize(p.port.port)}`))).join('\n')}`
+      return `${inputPorts.map((p) => p.edges.map((e) => '  ' + t('Compound.edgeAssign')(e)(`input_${sanitize(p.port.port)}`)).join('\n')).join('\n')}`
     },
 
     edgeAssign: (edge) => (variable) => `${t('Edge.name')(edge)} = ${variable};`,
