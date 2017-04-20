@@ -14,5 +14,13 @@ module.exports = {
   } else {
     (*${variable('inFalse')})(${variable('choice')});
   }
+`,
+
+  'if': (node) => `
+  if (${variable('condition')}->value) {
+    ${variable('choice')} = ${variable('inTrue')};
+  } else {
+    ${variable('choice')} = ${variable('inFalse')};
+  }
 `
 }

@@ -8,6 +8,8 @@ module.exports = {
       }
     },
 
+    preStruct: (struct) => `struct ${struct.name};`,
+
     struct: (struct) => `
 struct ${struct.name} {
 ${struct.structure.contents.map(t('Datastructures.structField')).join('\n')}
@@ -30,7 +32,14 @@ std::string ${t('Types.toStringName')(struct.name)} (const ${struct.name}& obj) 
 }
 `,
 
+    preDefToString: (struct) => `
+std::string ${t('Types.toStringName')(struct.name)} (const ${struct.name}& obj);
+`,
+
     toStringImpl: (struct) => {
+      if (typeof (struct) === 'object' && struct.structure && struct.structure.contents.length === 0) {
+        return '"()";'
+      }
       if (typeof (struct) === 'object' && struct.structure) {
         return '"(" + ' + struct.structure.contents.map((type) =>
           `${t('Datastructures.toStringImpl')(type)}(*obj.${type.name})`)

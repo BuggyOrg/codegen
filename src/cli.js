@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+// #!/usr/bin/env node
 
 import * as cliExt from 'cli-ext'
 import {generateExecutable} from './api'
