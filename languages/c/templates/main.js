@@ -1,6 +1,8 @@
 module.exports = {
   prefix: () => {
     const structs = Graph.components(graph).filter(Types.isType)
+    const constructors = structs.filter(Types.isConstructor)
+    const typeClasses = structs.filter(Types.isTypeClass)
     const compounds = Graph.compounds(graph)
     return `
 #include <cstdlib>
@@ -12,7 +14,9 @@ module.exports = {
 ${t('defineTypes')()}
 
 // datastructures...
-${structs.map(t('Datastructures.definition')).join('\n')}
+${structs.map(t('Datastructures.declaration')).join('\n')}
+${constructors.map(t('Datastructures.definition')).join('\n')}
+${typeClasses.map(t('Datastructures.definition')).join('\n')}
 
 // definitions...
 ${compounds.map(t('Compound.declare')).join('\n')}

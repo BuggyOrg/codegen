@@ -8,6 +8,14 @@ module.exports = {
       }
     },
 
+    declaration: (struct) => {
+      if (Types.isConstructor(struct)) {
+        return t('Datastructures.preStruct')(Types.structureData(struct))
+      } else if (Types.isTypeClass(struct)) {
+        return t('Datastructures.typeclassDeclaration')(struct)
+      }
+    },
+
     preStruct: (struct) => `struct ${struct.name};`,
 
     struct: (struct) => `

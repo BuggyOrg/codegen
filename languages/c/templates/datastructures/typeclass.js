@@ -8,18 +8,23 @@ module.exports = {
         orTypes = type.definition.data
       }
       return `
-struct ${t('Types.typeName')(struct.metaInformation.type)} {
-  std::string subType;
-  std::shared_ptr<void> data;
-};
+
 ${t('Datastructures.typeClassCopy')(struct)}
 
-${orTypes.map(t('Datastructures.preStruct')).join('\n')}
 ${orTypes.map(t('Datastructures.preDefToString')).join('\n')}
 
 ${t('Datastructures.typeClassToString')(struct)}
 `
     },
+
+    typeclassDeclaration: (struct) => `
+struct ${t('Types.typeName')(struct.metaInformation.type)} {
+  std::string subType;
+  std::shared_ptr<void> data;
+};
+
+std::string ${t('Types.toStringName')(struct.metaInformation.type.type.type)} (const ${struct.metaInformation.type.type.type}& obj);
+`,
 
     typeClassCopy: (struct) => {
       return ''
@@ -34,7 +39,7 @@ ${t('Datastructures.typeClassToString')(struct)}
     /*${JSON.stringify(struct.metaInformation.type, null, 2)}*/
 std::string ${t('Types.toStringName')(struct.metaInformation.type.type.type)} (const ${struct.metaInformation.type.type.type}& obj) {
   if (false) {}
-  ${orTypes.map((t, idx) => 'else if (obj.subType == ' + idx + ') { return __' + t.name + '_to_std__string(*(' + t.name + '*)&obj->value.data) } )').join('\n')}
+  ${orTypes.map((t, idx) => 'else if (obj.subType == "' + t.name + '") { return __' + t.name + '_to_std__string(*((std::shared_ptr<' + t.name + '>*)&(obj.data))->get()); }').join('\n')}
 }
 `
       } else {
