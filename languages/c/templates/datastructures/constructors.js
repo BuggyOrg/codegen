@@ -11,10 +11,12 @@ module.exports = {
         name: variable(p.port),
         index: idx,
         type: node.type,
-        output: variable(node.output.port)
+        output: '____TMP____'
       }))
       return `
-  ${variable(node.output.port)} = std::shared_ptr<${node.type.name}>(new ${node.type.name}());
+    /* ${JSON.stringify(node, null, 2)} */
+  ${node.type.name}* ____TMP____ = new ${node.type.name}();
+  ${variable(node.output.port)} = std::shared_ptr<${node.output.type}>(new ${node.output.type}(____TMP____));
 ${fields.join('\n')}`
     },
 
@@ -25,7 +27,7 @@ ${fields.join('\n')}`
       parameter: node.metaInformation.parameter
     }),
 
-    destructorAssign: (assign) => `${variable(assign.output.port)} = ${variable(assign.input.port)}->arg${assign.parameter};`,
+    destructorAssign: (assign) => `${variable(assign.output.port)} = ((std::shared_ptr<${assign.type.name}>*)${variable(assign.input.port)}->data)->get()->arg${assign.parameter};`,
 
     fieldAssign: (assign) => `  ${assign.output}->arg${assign.index} = ${assign.name};`
   }

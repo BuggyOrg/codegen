@@ -17,14 +17,30 @@ ${t('Datastructures.typeClassToString')(struct)}
 `
     },
 
-    typeclassDeclaration: (struct) => `
-struct ${t('Types.typeName')(struct.metaInformation.type)} {
+    typeclassDeclaration: (struct) => {
+      const type = struct.metaInformation.type
+      const isOr = type.definition.name === 'or'
+      const typeName = t('Types.typeName')(struct.metaInformation.type)
+      if (isOr) {
+        const orTypes = type.definition.data
+        return `
+${orTypes.map((t, idx) => 'struct ' + t.name + ';').join('\n')}
+
+struct ${typeName} {
   std::string subType;
-  std::shared_ptr<void> data;
+  void* data;
+  ${orTypes.map((t, idx) => '\n  ' + typeName + '(' + t.name + '* ptr) {\n' +
+'    this->data = (void*)(new std::shared_ptr<' + t.name + '>(ptr));\n' +
+'    this->subType = "' + t.name + '";\n' +
+'  }').join('\n')}
 };
 
 std::string ${t('Types.toStringName')(struct.metaInformation.type.type.type)} (const ${struct.metaInformation.type.type.type}& obj);
-`,
+`
+      } else {
+        return 'NO OR ON ROOT – NOT YET IMPLEMENTED <c/templates/datastructures/typeclass.js->typeClassToString>'
+      }
+    },
 
     typeClassCopy: (struct) => {
       return ''
@@ -36,10 +52,9 @@ std::string ${t('Types.toStringName')(struct.metaInformation.type.type.type)} (c
       if (isOr) {
         const orTypes = type.definition.data
         return `
-    /*${JSON.stringify(struct.metaInformation.type, null, 2)}*/
 std::string ${t('Types.toStringName')(struct.metaInformation.type.type.type)} (const ${struct.metaInformation.type.type.type}& obj) {
   if (false) {}
-  ${orTypes.map((t, idx) => 'else if (obj.subType == "' + t.name + '") { return __' + t.name + '_to_std__string(*((std::shared_ptr<' + t.name + '>*)&(obj.data))->get()); }').join('\n')}
+  ${orTypes.map((t, idx) => 'else if (obj.subType == "' + t.name + '") { return __' + t.name + '_to_std__string(*((std::shared_ptr<' + t.name + '>*)(obj.data))->get()); }').join('\n')}
 }
 `
       } else {

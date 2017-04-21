@@ -7,5 +7,14 @@ module.exports = {
 
 `
     }
+  },
+
+  Datastructures: {
+    typeclass: (struct) => {
+      return `${t('base')(struct)}
+
+${t('defineSpecialization')(struct.metaInformation.type.type.type)}
+`
+    }
   }
 }
