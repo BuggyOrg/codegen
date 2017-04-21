@@ -8,7 +8,7 @@ module.exports = {
 `,
 
   'math/equal': (node) => `
-  ${variable('equal')} = std::shared_ptr<Bool>(new Number(${variable('in1')}->value == ${variable('in2')}->value));
+  ${variable('equal')} = std::shared_ptr<Bool>(new Bool(${variable('in1')}->value == ${variable('in2')}->value));
 `,
 
   'math/less': (node) => `
