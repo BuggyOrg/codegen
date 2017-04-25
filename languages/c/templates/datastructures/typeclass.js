@@ -33,6 +33,11 @@ struct ${typeName} {
 '    this->data = (void*)(new std::shared_ptr<' + t.name + '>(ptr));\n' +
 '    this->subType = "' + t.name + '";\n' +
 '  }').join('\n')}
+
+  ~${typeName}() {
+    if (false) {}
+    ${orTypes.map((t, idx) => 'else if (this->subType == "' + t.name + '") { delete ((std::shared_ptr<' + t.name + '>*)(this->data))->get()); }').join('\n')}
+  }
 };
 
 std::string ${t('Types.toStringName')(struct.metaInformation.type.type.type)} (const ${struct.metaInformation.type.type.type}& obj);
