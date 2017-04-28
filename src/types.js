@@ -5,12 +5,17 @@ export function constructorCode (type) {
 
 export function typeName (type) {
   if (typeof (type) === 'string') return type
-  else return type.type.type
+  if (type.type && type.type.type) return type.type.type
+  else return type.name
 }
 
 export function isConstructor (node) {
-  return node.metaInformation && node.metaInformation &&
+  return node.metaInformation &&
     node.metaInformation.datastructure && node.metaInformation.isConstructor
+}
+
+export function isArray (node) {
+  return !!(node.metaInformation && node.metaInformation.isConstructor && node.componentId.indexOf('Array') === 0)
 }
 
 export function isDestructor (node) {

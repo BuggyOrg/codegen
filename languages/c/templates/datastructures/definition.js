@@ -1,7 +1,9 @@
 module.exports = {
   Datastructures: {
     definition: (struct) => {
-      if (Types.isConstructor(struct)) {
+      if (Types.isArray(struct)) {
+        return ``
+      } else if (Types.isConstructor(struct)) {
         return t('Datastructures.struct')(Types.structureData(struct))
       } else if (Types.isTypeClass(struct)) {
         return t('Datastructures.typeclass')(struct)
@@ -9,7 +11,9 @@ module.exports = {
     },
 
     declaration: (struct) => {
-      if (Types.isConstructor(struct)) {
+      if (Types.isArray(struct)) {
+        return t('Datastructures.array')(struct)
+      } else if (Types.isConstructor(struct)) {
         return t('Datastructures.preStruct')(Types.structureData(struct))
       } else if (Types.isTypeClass(struct)) {
         return t('Datastructures.typeclassDeclaration')(struct)
