@@ -10,6 +10,7 @@ module.exports = {
 #include <string>
 #include <memory>
 #include <functional>
+#include <vector>
 
 ${t('defineTypes')()}
 
@@ -17,6 +18,8 @@ ${t('defineTypes')()}
 ${structs.map(t('Datastructures.declaration')).join('\n')}
 ${constructors.map(t('Datastructures.definition')).join('\n')}
 ${typeClasses.map(t('Datastructures.definition')).join('\n')}
+
+${t('Datastructures.array')()}
 
 // definitions...
 ${compounds.map(t('Compound.declare')).join('\n')}

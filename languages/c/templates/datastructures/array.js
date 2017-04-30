@@ -1,9 +1,14 @@
 module.exports = {
   Datastructures: {
-    array: (struct) => {
+    array: () => {
       return `
 // Array
-${JSON.stringify(struct, null, 2)}
+template <typename T>
+struct Array {
+  Array(const std::initializer_list<T> vA) : v(vA) {}
+  Array(const std::vector<T> vA) : v(vA) {}
+  std::vector<T> v;
+};
 `
     }
   }

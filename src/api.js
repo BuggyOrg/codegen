@@ -62,6 +62,10 @@ function addCode (graph, language, options) {
 
 export function codeFor (node, language, options) {
   if (!node.atomic || Node.get('isRecursive', node)) return
+  if (node.atomic && node.type && node.componentId.indexOf('Array') === 0) {
+    return Language.template('Atomic', language, {options, data: node})(
+      Language.implementation(Object.assign({}, node, {componentId: 'Array'}), language, {options, data: node}))
+  }
   if (node.atomic && node.type) return Language.template('Datastructures.typeImplementation', language, {options, data: node})(node)
   return Language.template('Atomic', language, {options, data: node})(Language.implementation(node, language, {options, data: node}))
 }

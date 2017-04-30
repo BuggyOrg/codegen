@@ -6,7 +6,8 @@ export function constructorCode (type) {
 export function typeName (type) {
   if (typeof (type) === 'string') return type
   if (type.type && type.type.type) return type.type.type
-  else return type.name
+  if (type.type) return type.type
+  return type
 }
 
 export function isConstructor (node) {

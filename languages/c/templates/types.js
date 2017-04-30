@@ -4,7 +4,9 @@ module.exports = {
       if (typeof (type) === 'object' && type.name === 'Function') {
         return t('Types.functionTypeName')(type)
       }
-      return Types.typeName(type)
+      const typeName = Types.typeName(type)
+      if (typeof (typeName) === 'string') return typeName
+      else return type.name + '<' + type.data.map(t('Types.typeName')).join(', ') + '>'
     },
 
     functionTypeName: (type) => {

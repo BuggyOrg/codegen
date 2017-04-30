@@ -12,7 +12,7 @@ module.exports = {
 
     declaration: (struct) => {
       if (Types.isArray(struct)) {
-        return t('Datastructures.array')(struct)
+        return ``
       } else if (Types.isConstructor(struct)) {
         return t('Datastructures.preStruct')(Types.structureData(struct))
       } else if (Types.isTypeClass(struct)) {
