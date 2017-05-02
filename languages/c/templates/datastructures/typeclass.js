@@ -36,7 +36,7 @@ struct ${typeName} {
 
   ~${typeName}() {
     if (false) {}
-    ${orTypes.map((t, idx) => 'else if (this->subType == "' + t.name + '") { delete ((std::shared_ptr<' + t.name + '>*)(this->data))->get()); }').join('\n')}
+    ${orTypes.map((t, idx) => 'else if (this->subType == "' + t.name + '") { delete ((std::shared_ptr<' + t.name + '>*)(this->data))->get(); }').join('\n')}
   }
 };
 

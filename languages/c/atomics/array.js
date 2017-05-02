@@ -16,6 +16,10 @@ module.exports = {
 
   'array/push': (node) => ``,
 
+  'array/length': (node) => `
+  ${variable('length')} = std::shared_ptr<Number>(new Number(${variable('inArray')}->v.size()));
+`,
+
   'Array': (node) => {
     const len = node.metaInformation.length
     const arrType = node.ports[0].type

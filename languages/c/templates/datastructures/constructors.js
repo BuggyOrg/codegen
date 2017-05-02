@@ -29,6 +29,6 @@ ${fields.join('\n')}`
 
     destructorAssign: (assign) => `${variable(assign.output.port)} = ((std::shared_ptr<${assign.type.name}>*)${variable(assign.input.port)}->data)->get()->arg${assign.parameter};`,
 
-    fieldAssign: (assign) => `  ${assign.output}->arg${assign.index} = ${assign.name};`
+    fieldAssign: (assign) => `  ${assign.output}->argp_${assign.index} = ${assign.name};`
   }
 }
