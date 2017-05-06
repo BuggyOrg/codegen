@@ -19,7 +19,7 @@ ${t('Compound.assignInputs')(node)}
     },
 
     defineEdges: (node) => {
-      const edges = Graph.edges(node)
+      const edges = Graph.edges(node).filter((e) => e.layer === 'dataflow')
       return edges.map(t('Compound.defineEdge')).join('\n')
     },
 
