@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "command": "g++",
   "isShellCommand": true,
-  "args": ["-std=c++14", "${file}"],
+  "args": ["-std=c++14", "-g", "${file}"],
   "showOutput": "always",
   "problemMatcher": {
       "owner": "cpp",

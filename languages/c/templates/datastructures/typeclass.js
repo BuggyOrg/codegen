@@ -29,14 +29,14 @@ ${orTypes.map((t, idx) => 'struct ' + t.name + ';').join('\n')}
 struct ${typeName} {
   std::string subType;
   void* data;
-  ${orTypes.map((t, idx) => '\n  ' + typeName + '(' + t.name + '* ptr) {\n' +
-'    this->data = (void*)(new std::shared_ptr<' + t.name + '>(ptr));\n' +
-'    this->subType = "' + t.name + '";\n' +
+  ${orTypes.map((type, idx) => '\n  ' + typeName + '(' + type.name + '* ptr) {\n' +
+'    this->data = (void*)(new ' + t('dataType')(type.name) + '(ptr));\n' +
+'    this->subType = "' + type.name + '";\n' +
 '  }').join('\n')}
 
   ~${typeName}() {
     if (false) {}
-    ${orTypes.map((t, idx) => 'else if (this->subType == "' + t.name + '") { delete ((std::shared_ptr<' + t.name + '>*)(this->data))->get(); }').join('\n')}
+    ${orTypes.map((type, idx) => 'else if (this->subType == "' + type.name + '") { delete ((' + t('dataType')(type.name) + '*)(this->data))->get(); }').join('\n')}
   }
 };
 
@@ -59,7 +59,7 @@ std::string ${t('Types.toStringName')(struct.metaInformation.type.type.type)} (c
         return `
 std::string ${t('Types.toStringName')(struct.metaInformation.type.type.type)} (const ${struct.metaInformation.type.type.type}& obj) {
   if (false) {}
-  ${orTypes.map((t, idx) => 'else if (obj.subType == "' + t.name + '") { return __' + t.name + '_to_std__string(*((std::shared_ptr<' + t.name + '>*)(obj.data))->get()); }').join('\n')}
+  ${orTypes.map((type, idx) => 'else if (obj.subType == "' + type.name + '") { return __' + type.name + '_to_std__string(*((' + t('dataType')(type.name) + '*)(obj.data))->get()); }').join('\n')}
 }
 `
       } else {

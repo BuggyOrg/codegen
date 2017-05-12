@@ -30,8 +30,8 @@ ${compounds.map(t('Compound.declare')).join('\n')}
 
   mainEntry: (graph) => `
 int main (int argc, char** argv) {
-  std::shared_ptr<IO> io(new IO());
-  std::shared_ptr<IO> outIo;
+  ${t('dataType')('IO')} io(new IO());
+  ${t('dataType')('IO')} outIo;
 
   P_${t('Component.name')(graph)}(io, outIo);
   return 0;

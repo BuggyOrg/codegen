@@ -1,17 +1,27 @@
+const operation2 = (node, op) => {
+  const t1 = Node.inputPorts(node)[0].type
+  const p1 = Node.inputPorts(node)[0].port
+  const t2 = Node.inputPorts(node)[1].type
+  const p2 = Node.inputPorts(node)[1].port
+  const tOut = Node.outputPorts(node)[0].type
+  const pOut = Node.outputPorts(node)[0].port
+  return variable(pOut) + ' = ' + t('defType')(tOut, t('value')(t1, p1) + ' ' + op + ' ' + t('value')(t2, p2))
+}
+
 module.exports = {
   'math/add': (node) => `
-  ${variable('sum')} = std::shared_ptr<Number>(new Number(${variable('summand1')}->value + ${variable('summand2')}->value));
+  ${operation2(node, '+')};
 `,
 
   'math/multiply': (node) => `
-  ${variable('product')} = std::shared_ptr<Number>(new Number(${variable('factor1')}->value * ${variable('factor2')}->value));
+  ${operation2(node, '*')};
 `,
 
   'math/equal': (node) => `
-  ${variable('equal')} = std::shared_ptr<Bool>(new Bool(${variable('in1')}->value == ${variable('in2')}->value));
+  ${operation2(node, '==')};
 `,
 
   'math/less': (node) => `
-  ${variable('isLess')} = std::shared_ptr<Bool>(new Bool(${variable('lesser')}->value < ${variable('bigger')}->value));
+  ${operation2(node, '<')};
 `
 }

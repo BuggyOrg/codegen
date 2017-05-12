@@ -23,7 +23,7 @@ ${t('Compound.assignInputs')(node)}
       return edges.map(t('Compound.defineEdge')).join('\n')
     },
 
-    defineEdge: (edge) => `  std::shared_ptr<${t('Edge.type')(edge)}> ${t('Edge.name')(edge)};`,
+    defineEdge: (edge) => `  ${t('dataType')(t('Edge.type')(edge))} ${t('Edge.name')(edge)};`,
 
     assignInputs: (node) => {
       const inputPorts = Node.inputPorts(node).map((port) =>
@@ -42,7 +42,7 @@ ${t('Compound.postfix')(node)}`
 
     callProcess: (node) => {
       const outputVariables = Node.outputPorts(node).map((p) =>
-        `std::shared_ptr<${t('Port.type')(Graph.port(p, graph))}> ${t('Port.variable')(p)};`)
+        `${t('dataType')(t('Port.type')(Graph.port(p, graph)))} ${t('Port.variable')(p)};`).join('\n')
 
       const inputArguments = Node.inputPorts(node).map((p) => t('Edge.name')(Graph.inIncident(p, graph)))
       const outputArguments = Node.outputPorts(node).map(t('Port.variable'))

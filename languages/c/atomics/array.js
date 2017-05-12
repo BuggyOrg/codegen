@@ -1,23 +1,37 @@
+const arrayInnerType = (arrayType) =>
+  arrayType.data[0]
+
 module.exports = {
   'array/first': (node) => {
     const outputType = t('Types.typeName')(Node.outputPorts(node)[0].type)
-    return `
-  ${variable('val')} = std::shared_ptr<${outputType}>(new ${outputType}(${variable('inArray')}->v[0]));
+    return `${variable('val')} = ${t('defType')(outputType, t('value')('', 'inArray') + '[0]')};
 `
   },
 
   'array/rest': (node) => {
     const outputType = t('Types.typeName')(Node.outputPorts(node)[0].type)
-    const innerType = t('Types.typeName')(Node.outputPorts(node)[0].type.data[0])
+    const innerType = t('Types.typeName')(arrayInnerType(Node.outputPorts(node)[0].type))
     return `
-  ${variable('outArray')} = std::shared_ptr<${outputType}>(new ${outputType}(std::vector<${innerType}>(${variable('inArray')}->v.begin() + 1, ${variable('inArray')}->v.end())));
+  ${variable('outArray')} = ${t('defType')(outputType,
+    'std::vector<' + innerType + '>(' + t('value')('', 'inArray') + '.begin() + 1, ' + t('value')('', 'inArray') + '.end())')};
 `
   },
 
-  'array/push': (node) => ``,
+  'array/push': (node) => `
+  ${variable('outArray')} = std::shared_ptr<${t('Types.typeName')(node.ports[0].type)}>(new ${t('Types.typeName')(node.ports[0].type)}({}));
+  ${t('value')('', 'outArray')}.insert(${t('value')('', 'outArray')}.end(), ${t('value')('', 'inArray')}.begin(), ${t('value')('', 'inArray')}.end());
+  ${t('value')('', 'outArray')}.push_back(${t('value')('', 'val')});
+`,
+
+  'array/concat': (node) => `
+  ${variable('outArray')} = std::shared_ptr<${t('Types.typeName')(node.ports[0].type)}>(new ${t('Types.typeName')(node.ports[0].type)}({}));
+  ${t('value')('', 'outArray')}.reserve(${t('value')('', 'inArray1')}.size() + ${t('value')('', 'inArray2')}.size());
+  ${t('value')('', 'outArray')}.insert(${t('value')('', 'outArray')}.end(), ${t('value')('', 'inArray1')}.begin(), ${t('value')('', 'inArray1')}.end());
+  ${t('value')('', 'outArray')}.insert(${t('value')('', 'outArray')}.end(), ${t('value')('', 'inArray2')}.begin(), ${t('value')('', 'inArray2')}.end());
+  `,
 
   'array/length': (node) => `
-  ${variable('length')} = std::shared_ptr<Number>(new Number(${variable('inArray')}->v.size()));
+  ${variable('length')} = ${t('defType')('Number', t('value')('', 'inArray') + '.size()')};
 `,
 
   'Array': (node) => {
@@ -27,6 +41,47 @@ module.exports = {
     const inputs = Array.apply(null, Array(len)).map((_, idx) => '*' + variable('input') + idx)
     return `
   ${variable('output')} = std::shared_ptr<Array<${arrTN}>>(new Array<${arrTN}>({${inputs.join(', ')}}));
+`
+  },
+
+  'array/map': (node) => {
+    const arrInType = node.ports[0].type
+    const arrOutType = node.ports[node.ports.length - 1].type
+    const arrInTN = t('Types.typeName')(arrayInnerType(arrInType))
+    const arrOutTN = t('Types.typeName')(arrayInnerType(arrOutType))
+    return `
+  std::vector<${arrInTN}>& source = ${t('value')('', 'inArray')};
+  std::vector<${arrOutTN}> newArr;
+  newArr.reserve(source.size());
+  std::shared_ptr<${arrInTN}> inPtr;
+  std::shared_ptr<${arrOutTN}> outPtr;
+  for (int i = 0; i < source.size(); i++) {
+    inPtr = std::shared_ptr<${arrInTN}>(new ${arrInTN}(source[i]));
+    (*${variable('fn')})(inPtr, outPtr);
+    newArr.push_back(*outPtr);
+  }
+  ${variable('outArray')} = std::shared_ptr<Array<${arrOutTN}>>(new Array<${arrOutTN}>(newArr));
+`
+  },
+
+  'array/filter': (node) => {
+    const arrInType = node.ports[0].type
+    const arrOutType = node.ports[node.ports.length - 1].type
+    const arrInTN = t('Types.typeName')(arrayInnerType(arrInType))
+    const arrOutTN = t('Types.typeName')(arrayInnerType(arrOutType))
+    return `
+  std::vector<${arrInTN}>& source = ${t('value')('', 'inArray')};
+  std::vector<${arrOutTN}> newArr;
+  std::shared_ptr<${arrInTN}> inPtr;
+  std::shared_ptr<Bool> v_outPtr;
+  for (int i = 0; i < source.size(); i++) {
+    inPtr = std::shared_ptr<${arrInTN}>(new ${arrInTN}(source[i]));
+    (*${variable('fn')})(inPtr, v_outPtr);
+    if (${t('value')('', 'outPtr')}) {
+      newArr.push_back(source[i]);
+    }
+  }
+  ${variable('outArray')} = std::shared_ptr<Array<${arrOutTN}>>(new Array<${arrOutTN}>(newArr));
 `
   }
 }

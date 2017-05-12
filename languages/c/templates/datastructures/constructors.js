@@ -16,7 +16,7 @@ module.exports = {
       return `
     /* ${JSON.stringify(node, null, 2)} */
   ${node.type.name}* ____TMP____ = new ${node.type.name}();
-  ${variable(node.output.port)} = std::shared_ptr<${node.output.type}>(new ${node.output.type}(____TMP____));
+  ${variable(node.output.port)} = ${t('defType')(node.output.type, '____TMP____')};
 ${fields.join('\n')}`
     },
 
@@ -27,7 +27,7 @@ ${fields.join('\n')}`
       parameter: node.metaInformation.parameter
     }),
 
-    destructorAssign: (assign) => `${variable(assign.output.port)} = ((std::shared_ptr<${assign.type.name}>*)${variable(assign.input.port)}->data)->get()->arg${assign.parameter};`,
+    destructorAssign: (assign) => `${variable(assign.output.port)} = ((${t('dataType')(assign.type.name)}*)${variable(assign.input.port)}->data)->get()->arg${assign.parameter};`,
 
     fieldAssign: (assign) => `  ${assign.output}->argp_${assign.index} = ${assign.name};`
   }
