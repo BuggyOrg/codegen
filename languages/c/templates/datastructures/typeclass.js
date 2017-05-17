@@ -24,12 +24,12 @@ ${t('Datastructures.typeClassToString')(struct)}
       if (isOr) {
         const orTypes = type.definition.data
         return `
-${orTypes.map((t, idx) => 'struct ' + t.name + ';').join('\n')}
+${orTypes.map((t, idx) => 'struct ' + sanitize(t.name) + ';').join('\n')}
 
-struct ${typeName} {
+struct ${sanitize(typeName)} {
   std::string subType;
   void* data;
-  ${orTypes.map((type, idx) => '\n  ' + typeName + '(' + type.name + '* ptr) {\n' +
+  ${orTypes.map((type, idx) => '\n  ' + sanitize(typeName) + '(' + sanitize(type.name) + '* ptr) {\n' +
 '    this->data = (void*)(new ' + t('dataType')(type.name) + '(ptr));\n' +
 '    this->subType = "' + type.name + '";\n' +
 '  }').join('\n')}
@@ -40,7 +40,7 @@ struct ${typeName} {
   }
 };
 
-std::string ${t('Types.toStringName')(struct.metaInformation.type.type.type)} (const ${struct.metaInformation.type.type.type}& obj);
+std::string ${t('Types.toStringName')(struct.metaInformation.type.type.type)} (const ${sanitize(struct.metaInformation.type.type.type)}& obj);
 `
       } else {
         return 'NO OR ON ROOT – NOT YET IMPLEMENTED <c/templates/datastructures/typeclass.js->typeClassToString>'
@@ -57,9 +57,9 @@ std::string ${t('Types.toStringName')(struct.metaInformation.type.type.type)} (c
       if (isOr) {
         const orTypes = type.definition.data
         return `
-std::string ${t('Types.toStringName')(struct.metaInformation.type.type.type)} (const ${struct.metaInformation.type.type.type}& obj) {
+std::string ${t('Types.toStringName')(struct.metaInformation.type.type.type)} (const ${sanitize(struct.metaInformation.type.type.type)}& obj) {
   if (false) {}
-  ${orTypes.map((type, idx) => 'else if (obj.subType == "' + type.name + '") { return __' + type.name + '_to_std__string(*((' + t('dataType')(type.name) + '*)(obj.data))->get()); }').join('\n')}
+  ${orTypes.map((type, idx) => 'else if (obj.subType == "' + type.name + '") { return __' + sanitize(type.name) + '_to_std__string(*((' + t('dataType')(type.name) + '*)(obj.data))->get()); }').join('\n')}
 }
 `
       } else {

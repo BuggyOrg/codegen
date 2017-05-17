@@ -5,7 +5,7 @@ module.exports = {
         return t('Types.functionTypeName')(type)
       }
       const typeName = Types.typeName(type)
-      if (typeof (typeName) === 'string') return typeName
+      if (typeof (typeName) === 'string') return sanitize(typeName)
       else return type.name + '<' + type.data.map(t('Types.typeName')).join(', ') + '>'
     },
 

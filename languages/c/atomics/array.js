@@ -23,6 +23,12 @@ module.exports = {
   ${t('value')('', 'outArray')}.push_back(${t('value')('', 'val')});
 `,
 
+  'array/prepend': (node) => `
+  ${variable('outArray')} = std::shared_ptr<${t('Types.typeName')(node.ports[0].type)}>(new ${t('Types.typeName')(node.ports[0].type)}({}));
+  ${t('value')('', 'outArray')}.insert(${t('value')('', 'outArray')}.end(), ${t('value')('', 'inArray')}.begin(), ${t('value')('', 'inArray')}.end());
+  ${t('value')('', 'outArray')}.insert(${t('value')('', 'outArray')}.begin(), *${variable('value')});
+`,
+
   'array/concat': (node) => `
   ${variable('outArray')} = std::shared_ptr<${t('Types.typeName')(node.ports[0].type)}>(new ${t('Types.typeName')(node.ports[0].type)}({}));
   ${t('value')('', 'outArray')}.reserve(${t('value')('', 'inArray1')}.size() + ${t('value')('', 'inArray2')}.size());
@@ -40,7 +46,7 @@ module.exports = {
     const arrTN = t('Types.typeName')(arrType)
     const inputs = Array.apply(null, Array(len)).map((_, idx) => '*' + variable('input') + idx)
     return `
-  ${variable('output')} = std::shared_ptr<Array<${arrTN}>>(new Array<${arrTN}>({${inputs.join(', ')}}));
+  ${variable('output')} = std::shared_ptr<${arrTN}>(new ${arrTN}({${inputs.join(', ')}}));
 `
   },
 

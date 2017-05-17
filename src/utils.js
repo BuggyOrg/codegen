@@ -9,7 +9,7 @@ export function sanitize (str) {
     return sanitize(JSON.stringify(str))
   }
   // replace all but characters and numbers
-  return str.replace(/([^0-9^A-Z^a-z_])/g, (c) => c.charCodeAt(0))
+  return str.replace(/([^0-9^A-Z^a-z_^<^>])/g, (c) => c.charCodeAt(0))
 }
 
 export function variable (name) {

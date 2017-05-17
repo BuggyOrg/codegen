@@ -15,7 +15,7 @@ module.exports = {
       }))
       return `
     /* ${JSON.stringify(node, null, 2)} */
-  ${node.type.name}* ____TMP____ = new ${node.type.name}();
+  ${sanitize(node.type.name)}* ____TMP____ = new ${sanitize(node.type.name)}();
   ${variable(node.output.port)} = ${t('defType')(node.output.type, '____TMP____')};
 ${fields.join('\n')}`
     },

@@ -20,10 +20,10 @@ module.exports = {
       }
     },
 
-    preStruct: (struct) => `struct ${struct.name};`,
+    preStruct: (struct) => `struct ${sanitize(struct.name)};`,
 
     struct: (struct) => `
-struct ${struct.name} {
+struct ${sanitize(struct.name)} {
 ${struct.structure.contents.map(t('Datastructures.structField')).join('\n')}
 };
 
@@ -39,13 +39,13 @@ ${t('Datastructures.toString')(struct)}
     },
 
     toString: (struct) => `
-std::string ${t('Types.toStringName')(struct.name)} (const ${struct.name}& obj) {
+std::string ${t('Types.toStringName')(struct.name)} (const ${sanitize(struct.name)}& obj) {
   return ${t('Datastructures.toStringImpl')(struct)}
 }
 `,
 
     preDefToString: (struct) => `
-std::string ${t('Types.toStringName')(struct.name)} (const ${struct.name}& obj);
+std::string ${t('Types.toStringName')(struct.name)} (const ${sanitize(struct.name)}& obj);
 `,
 
     toStringImpl: (struct) => {
