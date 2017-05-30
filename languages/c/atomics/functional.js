@@ -16,7 +16,7 @@ module.exports = {
     const argNum = fnType.data[0].data.length + fnType.data[1].data.length
     const nArr = Array.apply(null, {length: argNum}).map(Number.call, Number)
     return `
-  v_fn = ${t('defType')(fnTypeName,
+  v_fn = ${t('defType')(fnType,
     'std::bind(*v_inFn, v_value, ' + nArr.map((idx) => 'std::placeholders::_' + (idx + 1)).join(', ') + ')')};
 `
   }

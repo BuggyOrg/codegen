@@ -5,7 +5,7 @@ module.exports = {
       `__${sanitize(edge.to.node)}_${sanitize(edge.to.port)}`,
 
     type: (edge) => {
-      return t('Types.typeName')(edge.type)
+      return edge.type
     }
   }
 }

@@ -43,7 +43,7 @@ module.exports = {
   'Array': (node) => {
     const len = node.metaInformation.length
     const arrType = node.ports[0].type
-    const arrTN = t('Types.typeName')(arrType)
+    const arrTN = 'Array<' + t('Types.typeName')(arrType) + '>'
     const inputs = Array.apply(null, Array(len)).map((_, idx) => '*' + variable('input') + idx)
     return `
   ${variable('output')} = std::shared_ptr<${arrTN}>(new ${arrTN}({${inputs.join(', ')}}));
