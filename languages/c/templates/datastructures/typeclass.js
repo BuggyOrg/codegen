@@ -30,13 +30,13 @@ struct ${sanitize(typeName)} {
   std::string subType;
   void* data;
   ${orTypes.map((type, idx) => '\n  ' + sanitize(typeName) + '(' + sanitize(type.name) + '* ptr) {\n' +
-'    this->data = (void*)(new ' + t('dataType')(type.name) + '(ptr));\n' +
+'    this->data = (void*)(new ' + t('Types.typeName')(type.name) + '(ptr));\n' +
 '    this->subType = "' + type.name + '";\n' +
 '  }').join('\n')}
 
   ~${typeName}() {
     if (false) {}
-    ${orTypes.map((type, idx) => 'else if (this->subType == "' + type.name + '") { delete ((' + t('dataType')(type.name) + '*)(this->data))->get(); }').join('\n')}
+    ${orTypes.map((type, idx) => 'else if (this->subType == "' + type.name + '") { delete ((' + t('Types.typeName')(type.name) + '*)(this->data)); }').join('\n')}
   }
 };
 
@@ -59,7 +59,7 @@ std::string ${t('Types.toStringName')(struct.metaInformation.type.type.type)} (c
         return `
 std::string ${t('Types.toStringName')(struct.metaInformation.type.type.type)} (const ${sanitize(struct.metaInformation.type.type.type)}& obj) {
   if (false) {}
-  ${orTypes.map((type, idx) => 'else if (obj.subType == "' + type.name + '") { return __' + sanitize(type.name) + '_to_std__string(*((' + t('dataType')(type.name) + '*)(obj.data))->get()); }').join('\n')}
+  ${orTypes.map((type, idx) => 'else if (obj.subType == "' + type.name + '") { return __' + sanitize(type.name) + '_to_std__string(*((' + t('Types.typeName')(type.name) + '*)(obj.data))); }').join('\n')}
 }
 `
       } else {
