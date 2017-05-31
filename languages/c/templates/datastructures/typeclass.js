@@ -58,9 +58,9 @@ std::string ${t('Types.toStringName')(struct.metaInformation.type.type.type)} (c
       if (isOr) {
         const orTypes = type.definition.data
         return `
-${typeName}* ${t('Types.copyName')(typeName)} (const ${sanitize(typeName)}& obj) {
+${sanitize(typeName)}* ${t('Types.copyName')(typeName)} (const ${sanitize(typeName)}& obj) {
   if (false) {}
-  ${orTypes.map((type, idx) => 'else if (obj.subType == "' + type.name + '") { return new ' + typeName + '(__copy_' + sanitize(type.name) + '(*((' + t('Types.typeName')(type.name) + '*)(obj.data)))); }').join('\n')}
+  ${orTypes.map((type, idx) => 'else if (obj.subType == "' + type.name + '") { return new ' + sanitize(typeName) + '(__copy_' + sanitize(type.name) + '(*((' + t('Types.typeName')(type.name) + '*)(obj.data)))); }').join('\n')}
 }
 `
       } else {

@@ -75,10 +75,10 @@ std::string ${t('Types.toStringName')(struct.name)} (const ${sanitize(struct.nam
 
     copyImpl: (struct) => {
       if (typeof (struct) === 'object' && struct.structure && struct.structure.contents.length === 0) {
-        return `new ${struct.name}();`
+        return `new ${sanitize(struct.name)}();`
       }
       if (typeof (struct) === 'object' && struct.structure) {
-        return 'new ' + struct.name + '(' + struct.structure.contents.map((type) =>
+        return 'new ' + sanitize(struct.name) + '(' + struct.structure.contents.map((type) =>
           `*obj.${type.name}`)
           .join(', ') + ');'
       } else if (typeof (struct) === 'object' && struct.kind === 'basic') {

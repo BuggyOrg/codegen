@@ -8,6 +8,12 @@ module.exports = {
 `
   },
 
+  'array/last': (node) => {
+    const outputType = t('Types.typeName')(Node.outputPorts(node)[0].type)
+    return `${variable('val')} = ${t('defType')(outputType, t('value')('', 'inArray') + '.back()')};
+`
+  },
+
   'array/rest': (node) => {
     const outputType = t('Types.typeName')(Node.outputPorts(node)[0].type)
     const innerType = t('Types.typeName')(arrayInnerType(Node.outputPorts(node)[0].type))
@@ -17,10 +23,19 @@ module.exports = {
 `
   },
 
+  'array/butlast': (node) => {
+    const outputType = t('Types.typeName')(Node.outputPorts(node)[0].type)
+    const innerType = t('Types.typeName')(arrayInnerType(Node.outputPorts(node)[0].type))
+    return `
+  ${variable('outArray')} = ${t('defType')(outputType,
+    'std::vector<' + innerType + '>(' + t('value')('', 'inArray') + '.begin(), ' + t('value')('', 'inArray') + '.end() - 1)')};
+`
+  },
+
   'array/push': (node) => `
   ${variable('outArray')} = std::shared_ptr<${t('Types.typeName')(node.ports[0].type)}>(new ${t('Types.typeName')(node.ports[0].type)}({}));
   ${t('value')('', 'outArray')}.insert(${t('value')('', 'outArray')}.end(), ${t('value')('', 'inArray')}.begin(), ${t('value')('', 'inArray')}.end());
-  ${t('value')('', 'outArray')}.push_back(${t('value')('', 'val')});
+  ${t('value')('', 'outArray')}.push_back(*${variable('val')});
 `,
 
   'array/prepend': (node) => `
@@ -43,7 +58,8 @@ module.exports = {
   'Array': (node) => {
     const len = node.metaInformation.length
     const arrType = node.ports[0].type
-    const arrTN = 'Array<' + t('Types.typeName')(arrType) + '>'
+    console.error(arrType)
+    const arrTN = t('Types.typeName')(arrType)
     const inputs = Array.apply(null, Array(len)).map((_, idx) => '*' + variable('input') + idx)
     return `
   ${variable('output')} = std::shared_ptr<${arrTN}>(new ${arrTN}({${inputs.join(', ')}}));
