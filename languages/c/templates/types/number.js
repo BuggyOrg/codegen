@@ -11,7 +11,7 @@ module.exports = {
       definition: () => `Int(int v) : value(v) {}
   int value;`,
       copy: (other) => `return new Int(${other}.value);`,
-      toString: (n) => `return std::string(std::to_string(${n}.value));`
+      toString: (n) => `return std::to_string(${n}.value);`
     }
   }
 }
