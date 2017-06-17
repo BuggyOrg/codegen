@@ -58,7 +58,6 @@ module.exports = {
   'Array': (node) => {
     const len = node.metaInformation.length
     const arrType = node.ports[0].type
-    console.error(arrType)
     const arrTN = t('Types.typeName')(arrType)
     const inputs = Array.apply(null, Array(len)).map((_, idx) => '*' + variable('input') + idx)
     return `

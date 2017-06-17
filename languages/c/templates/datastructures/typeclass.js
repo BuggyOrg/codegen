@@ -14,7 +14,26 @@ ${t('Datastructures.typeClassCopy')(struct)}
 ${orTypes.map(t('Datastructures.preDefToString')).join('\n')}
 
 ${t('Datastructures.typeClassToString')(struct)}
+
+${t('Datastructures.typeclassDefinition')(struct)}
 `
+    },
+
+    typeclassPreDeclaration: (struct) => {
+      const type = struct.metaInformation.type
+      const isOr = type.definition.name === 'or'
+      const typeName = t('Types.typeName')(struct.metaInformation.type)
+      if (isOr) {
+        const orTypes = type.definition.data
+        return `
+${orTypes.map((t, idx) => 'struct ' + sanitize(t.name) + ';').join('\n')}
+${orTypes.map((type, idx) => sanitize(type.name) + '* ' + t('Types.copyName')(type.name) + '(const ' + sanitize(type.name) + '&);').join('\n')}
+
+struct ${sanitize(typeName)};
+`
+      } else {
+        'NO OR ON ROOT – NOT YET IMPLEMENTED <c/templates/datastructures/typeclass.js->typeClassToString>'
+      }
     },
 
     typeclassDeclaration: (struct) => {
@@ -33,18 +52,35 @@ ${sanitize(typeName)}* ${t('Types.copyName')(typeName)}(const ${sanitize(typeNam
 struct ${sanitize(typeName)} {
   std::string subType;
   void* data;
-  ${orTypes.map((type, idx) => '\n  ' + sanitize(typeName) + '(' + sanitize(type.name) + '* ptr) {\n' +
-'    this->data = (void*)(' + t('Types.copyName')(type.name) + '(*ptr));\n' +
-'    this->subType = "' + type.name + '";\n' +
-'  }').join('\n')}
+  ${orTypes.map((type, idx) => '\n  ' + sanitize(typeName) + '(' + sanitize(type.name) + '* ptr);').join('\n')}
 
-  ~${typeName}() {
-    if (false) {}
-    ${orTypes.map((type, idx) => 'else if (this->subType == "' + type.name + '") { delete ((' + t('Types.typeName')(type.name) + '*)(this->data)); }').join('\n')}
-  }
+  ~${typeName}();
 };
 
 std::string ${t('Types.toStringName')(struct.metaInformation.type.type.type)} (const ${sanitize(struct.metaInformation.type.type.type)}& obj);
+`
+      } else {
+        return 'NO OR ON ROOT – NOT YET IMPLEMENTED <c/templates/datastructures/typeclass.js->typeClassToString>'
+      }
+    },
+
+    typeclassDefinition: (struct) => {
+      const type = struct.metaInformation.type
+      const isOr = type.definition.name === 'or'
+      const typeName = t('Types.typeName')(struct.metaInformation.type)
+      if (isOr) {
+        const orTypes = type.definition.data
+        return `
+${orTypes.map((type, idx) => '\n' + sanitize(typeName) + '::' + sanitize(typeName) + '(' + sanitize(type.name) + '* ptr) {\n' +
+'  this->data = (void*)(' + t('Types.copyName')(type.name) + '(*ptr));\n' +
+'  this->subType = "' + type.name + '";\n' +
+'}').join('\n')}
+
+${typeName}::~${typeName}() {
+  if (false) {}
+  ${orTypes.map((type, idx) => 'else if (this->subType == "' + type.name + '") { delete ((' + t('Types.typeName')(type.name) + '*)(this->data)); }').join('\n')}
+}
+
 `
       } else {
         return 'NO OR ON ROOT – NOT YET IMPLEMENTED <c/templates/datastructures/typeclass.js->typeClassToString>'
@@ -60,7 +96,7 @@ std::string ${t('Types.toStringName')(struct.metaInformation.type.type.type)} (c
         return `
 ${sanitize(typeName)}* ${t('Types.copyName')(typeName)} (const ${sanitize(typeName)}& obj) {
   if (false) {}
-  ${orTypes.map((type, idx) => 'else if (obj.subType == "' + type.name + '") { return new ' + sanitize(typeName) + '(__copy_' + sanitize(type.name) + '(*((' + t('Types.typeName')(type.name) + '*)(obj.data)))); }').join('\n')}
+  ${orTypes.map((type, idx) => 'else if (obj.subType == "' + type.name + '") { return new ' + sanitize(typeName) + '(((' + t('Types.typeName')(type.name) + '*)(obj.data))); }').join('\n')}
 }
 `
       } else {

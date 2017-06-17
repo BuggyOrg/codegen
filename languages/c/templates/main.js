@@ -15,6 +15,7 @@ module.exports = {
 ${t('defineTypes')()}
 
 // datastructures...
+${structs.map(t('Datastructures.preDefine')).join('\n')}
 ${structs.map(t('Datastructures.declaration')).join('\n')}
 ${constructors.map(t('Datastructures.definition')).join('\n')}
 ${typeClasses.map(t('Datastructures.definition')).join('\n')}

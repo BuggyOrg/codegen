@@ -4,32 +4,20 @@ module.exports = {
       if (Types.isArray(struct)) {
         return ``
       } else if (Types.isConstructor(struct)) {
-        return t('Datastructures.struct')(Types.structureData(struct))
+        return t('Datastructures.define')(Types.structureData(struct))
       } else if (Types.isTypeClass(struct)) {
         return t('Datastructures.typeclass')(struct)
       }
     },
 
-    declaration: (struct) => {
-      if (Types.isArray(struct)) {
-        return ``
-      } else if (Types.isConstructor(struct)) {
-        return t('Datastructures.preStruct')(Types.structureData(struct))
-      } else if (Types.isTypeClass(struct)) {
-        return t('Datastructures.typeclassDeclaration')(struct)
-      }
-    },
+    define: (struct) => `
+${sanitize(struct.name)}::${sanitize(struct.name)}(${struct.structure.contents.map(t('Datastructures.structArgument')).join(', ')}) {
+  ${struct.structure.contents.map((field) => '  this->' + field.name + ' = __copy_' + t('Types.typeName')(field.type) + '(' + field.name + ');').join('\n')}
+}
 
-    preStruct: (struct) => `struct ${sanitize(struct.name)};`,
-
-    struct: (struct) => `
-struct ${sanitize(struct.name)} {
-${struct.structure.contents.map(t('Datastructures.structField')).join('\n')}
-
-${sanitize(struct.name)}(${struct.structure.contents.map(t('Datastructures.structArgument')).join(', ')}) {
-    ${struct.structure.contents.map((field) => '  this->' + field.name + ' = __copy_' + t('Types.typeName')(field.type) + '(' + field.name + ');').join('\n')};
-  }
-};
+${sanitize(struct.name)}::~${sanitize(struct.name)}() {
+  ${struct.structure.contents.map((field) => '  delete this->' + field.name + ';').join('\n')}
+}
 
 ${t('Datastructures.copy')(struct)}
 
