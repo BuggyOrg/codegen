@@ -6,6 +6,7 @@ module.exports = {
       }
       const typeName = Types.typeName(type)
       if (typeof (typeName) === 'string') return sanitize(typeName)
+      else if (type.name === 'Array') return type.name + '<' + type.data.map((type) => t('Types.typeName')(type) + '*').join(', ') + '>'
       else return type.name + '<' + type.data.map(t('Types.typeName')).join(', ') + '>'
     },
 

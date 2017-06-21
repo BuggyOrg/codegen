@@ -10,26 +10,26 @@ module.exports = {
   },
 
   'std/split': (node) => `
-  std::vector<String> res;
+  std::vector<String*> res;
   std::string cur = "";
   std::string& input = ${t('value')('', 'str')};
   for (int i = 0; i < input.length(); i++) {
     if (input[i] == ' ') {
-      res.push_back(String(cur));
+      res.push_back(new String(cur));
       cur = "";
     } else {
       cur += input[i];
     }
   }
-  res.push_back(String(cur));
-  ${variable('text')} = std::shared_ptr<Array<String>>(new Array<String>(res));
+  res.push_back(new String(cur));
+  ${variable('text')} = std::shared_ptr<Array<String*>>(new Array<String*>(res));
 `,
 
   'std/join': (node) => `
-  std::vector<String>& input = ${t('value')('', 'inArray')};
+  std::vector<String*>& input = ${t('value')('', 'inArray')};
   std::string res = "";
   for (int i = 0; i < input.size(); i++) {
-    res += input[i].value;
+    res += input[i]->value;
     if (i != input.size() - 1) res += ' ';
   }
   ${variable('str')} = std::shared_ptr<String>(new String(res));
