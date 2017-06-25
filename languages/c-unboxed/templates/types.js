@@ -10,6 +10,7 @@ module.exports = {
     if (type === 'Number') {
       return variable(name)
     }
+    console.error(type, name)
     return t('base')(type, name)
   }
 }

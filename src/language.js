@@ -215,8 +215,8 @@ function addBase (tmpl, context, language, languages) {
   } else {
     newContext.callStack.push({template: context.callStack[0].template, language: language.name})
   }
-  language.templates.base = (data) =>
-    template(newContext.callStack[0].template, languages, newContext)(data)
+  language.templates.base = (...data) =>
+    template(newContext.callStack[0].template, languages, newContext)(...data)
   languages.callables.forEach((c) => (c.templates && c.templates.base) ? (c.templates.base = language.templates.base) : null)
   return language
 }

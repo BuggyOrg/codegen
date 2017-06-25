@@ -5,7 +5,11 @@ const operation2 = (node, op) => {
   const p2 = Node.inputPorts(node)[1].port
   const tOut = Node.outputPorts(node)[0].type
   const pOut = Node.outputPorts(node)[0].port
-  return t('value')(tOut, pOut) + ' = ' + t('value')(t1, p1) + ' ' + op + ' ' + t('value')(t2, p2)
+  if (tOut === 'Number') {
+    return t('value')(tOut, pOut) + ' = ' + t('value')(t1, p1) + ' ' + op + ' ' + t('value')(t2, p2)
+  } else {
+    return  variable(pOut) + ' = ' + t('defType')(tOut, t('value')(t1, p1) + ' ' + op + ' ' + t('value')(t2, p2))
+  }
 }
 
 module.exports = {
