@@ -25,7 +25,6 @@ module.exports = {
   },
 
   value: (type, name) => {
-    console.error(type, name)
     return variable(name) + '->value'
   }
 }

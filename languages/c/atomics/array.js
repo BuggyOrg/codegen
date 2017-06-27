@@ -24,11 +24,11 @@ module.exports = {
   },
 
   'array/butlast': (node) => {
-    const outputType = t('Types.typeName')(Node.outputPorts(node)[0].type)
+    const outputType = Node.outputPorts(node)[0].type
     const innerType = t('Types.typeName')(arrayInnerType(Node.outputPorts(node)[0].type))
     return `
   ${variable('outArray')} = ${t('defType')(outputType,
-    'std::vector<' + innerType + '>(' + t('value')('', 'inArray') + '.begin(), ' + t('value')('', 'inArray') + '.end() - 1)')};
+    'std::vector<' + innerType + '*>(' + t('value')('', 'inArray') + '.begin(), ' + t('value')('', 'inArray') + '.end() - 1)')};
 `
   },
 
