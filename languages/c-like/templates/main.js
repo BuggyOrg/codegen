@@ -11,7 +11,7 @@ ${t('prefix')(graph)}
 ${uniqBy(t('Component.name'), atomics).map(t('Process.definition')).join('\n')}
 
 // compounds...
-${compounds.map(t('Compound.definition')).join('\n')}
+${uniqBy(t('Component.name'), compounds).map(t('Compound.definition')).join('\n')}
 
 ${t('mainEntry')(graph)}
 `
