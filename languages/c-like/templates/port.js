@@ -5,6 +5,6 @@ module.exports = {
 
     name: (node) => node.port,
 
-    variable: (node) => `p_${node.port}_${sanitize(node.node)}`
+    variable: (node) => `p_${sanitize(node.port)}_${sanitize(node.node)}`
   }
 }
