@@ -13,8 +13,16 @@ module.exports = {
   ${operation2(node, '+')};
 `,
 
+  'math/sub': (node) => `
+  ${operation2(node, '-')};
+`,
+
   'math/multiply': (node) => `
   ${operation2(node, '*')};
+`,
+
+  'math/div': (node) => `
+  ${operation2(node, '/')};
 `,
 
   'math/equal': (node) => `
