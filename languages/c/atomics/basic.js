@@ -52,5 +52,10 @@ module.exports = {
 
   '!': (node) => `
   ${variable('negatedIn')} = std::shared_ptr<Bool>(new Bool(!${t('value')('', 'in')}));
+`,
+
+  'DUP': (node) => `
+  ${variable(Node.outputPorts(node)[0].port)} = ${variable(Node.inputPorts(node)[0].port)};
+  ${variable(Node.outputPorts(node)[1].port)} = ${variable(Node.inputPorts(node)[0].port)};
 `
 }
